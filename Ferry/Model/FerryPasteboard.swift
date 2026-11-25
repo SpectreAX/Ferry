@@ -22,16 +22,19 @@ enum FerryPasteboard {
     ///   (it also keeps `.string`, `.html` and the fragment for native apps and for pasting back into
     ///   Ferry), followed by each image file.
     /// `attachFiles: false` (drags) or a failed `.md` write keeps the text-only form.
+    /// `stripMarkdown`: the text for other apps leaves out Markdown syntax; the Ferry fragment keeps it.
     /// Returns the number of image files attached.
     @discardableResult
     static func writeForAI(_ fragment: Fragment, to pasteboard: NSPasteboard, attachFiles: Bool = true,
                            attachmentsDirectory: URL = ClipboardAttachments.defaultDirectory,
-                           documentName: String = "Untitled") -> Int {
+                           documentName: String = "Untitled", stripMarkdown: Bool = false) -> Int {
+        let original = fragment
+        let fragment = stripMarkdown ? fragment.strippingMarkdown() : fragment
         let markdown = ClipboardRenderer.aiMarkdown(fragment)
         let item = NSPasteboardItem()
         item.setString(markdown, forType: .string)
         item.setString(ClipboardRenderer.html(fragment), forType: .html)
-        if let json = try? JSONEncoder().encode(fragment) {
+        if let json = try? JSONEncoder().encode(original) {
             item.setData(json, forType: fragmentType)
         }
 

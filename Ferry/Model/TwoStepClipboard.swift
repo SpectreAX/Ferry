@@ -42,9 +42,11 @@ final class TwoStepClipboard {
     private var swapWork: DispatchWorkItem?
 
     /// Writes step 1. Returns the number of images offered; 0 means nothing was written.
+    /// `stripMarkdown`: the step-2 text leaves out Markdown syntax; the Ferry fragment keeps it.
     @discardableResult
-    func write(_ fragment: Fragment, to pasteboard: NSPasteboard) -> Int {
+    func write(_ fragment: Fragment, to pasteboard: NSPasteboard, stripMarkdown: Bool = false) -> Int {
         reset()
+        let textFragment = stripMarkdown ? fragment.strippingMarkdown() : fragment
         let imageURLs = FerryPasteboard.attachableImageURLs(fragment)
         guard !imageURLs.isEmpty else { return 0 }
         let fragmentData = try? JSONEncoder().encode(fragment)
@@ -62,8 +64,8 @@ final class TwoStepClipboard {
         pasteboard.writeObjects(items)
 
         // Images only: no second step, every paste repeats the images.
-        if Self.hasText(fragment) {
-            let text = ClipboardRenderer.textWithImagePlaceholders(fragment, attached: imageURLs.map(\.path))
+        if Self.hasText(textFragment) {
+            let text = ClipboardRenderer.textWithImagePlaceholders(textFragment, attached: imageURLs.map(\.path))
             pending = Pending(pasteboard: pasteboard, changeCount: pasteboard.changeCount, text: text, fragment: fragmentData)
         }
         return imageURLs.count

@@ -3,11 +3,12 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var document: MarkdownDocument
     let fileURL: URL?
+    @AppStorage(SettingsKeys.hideMarkdownSyntax) private var hideMarkdownSyntax = false
     @State private var toast: String?
     @State private var toastTask: Task<Void, Never>?
 
     var body: some View {
-        MarkdownEditor(document: document, fileURL: fileURL, onCopyToast: showCopyToast)
+        MarkdownEditor(document: document, fileURL: fileURL, hideMarkdownSyntax: hideMarkdownSyntax, onCopyToast: showCopyToast)
             .frame(minWidth: 480, minHeight: 320)
             .overlay(alignment: .bottom) {
                 if let toast {

@@ -6,6 +6,8 @@ A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextK
 
 - **Inline Images & Lossless Markdown**: Renders local images inline with `ImageAttachment` while preserving original Markdown syntax on save (`MarkdownCodec`), and stores imported images in a document-adjacent `assets/` folder (`AssetStore`).
 - **Live Syntax Highlighting**: Incremental CommonMark + GFM styling (`SyntaxHighlighter`) that never alters text and avoids restyling during IME composition, paired with Return list/task/quote continuation (`ListContinuation`).
+- **Hide Markdown Syntax (`⇧⌘M`)**: Toggle hiding Markdown syntax symbols in the editor (`View` menu or `Ferry › Settings`), revealing the active cursor paragraph automatically without changing document text (`SyntaxHider`).
+- **Ignore Markdown Syntax When Copying**: Optional toggle (`Edit` menu or `Ferry › Settings`) to strip Markdown syntax for external apps (`MarkdownStripper`) while keeping lossless Markdown when pasting back into Ferry and via `⌥⌘C`.
 - **Rich Paste Import**: Preserves reading order of text and images from RTFD (Notes, Pages, TextEdit) and HTML (browsers, Notion, Word) via `RichClipboardReader` and `PasteImporter`, downloading remote web images in the background (`RemoteImageLoader`).
 - **Three Copy Modes for Mixed Selections** (`Ferry › Settings`):
   - **Paste twice** *(default)*: Offers image files lazily on the first paste, then swaps the clipboard to text with `[Image N]` placeholders for the second paste (`TwoStepClipboard`).

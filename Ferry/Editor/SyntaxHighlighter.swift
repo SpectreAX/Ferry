@@ -1,5 +1,11 @@
 import AppKit
 
+extension NSAttributedString.Key {
+    /// Markup that "Hide Markdown Syntax" may hide: heading #s, emphasis and code delimiters, link brackets
+    /// and targets, escapes. Structural markers (lists, quotes, fences, rules, tables) only get dimmed.
+    static let ferryHideableMarker = NSAttributedString.Key("dev.spectreax.ferry.hideableMarker")
+}
+
 /// Markdown styling (CommonMark + GFM) by font and color only: the text is never changed.
 /// Headings, emphasis, strikethrough, code (inline and fenced), quotes, lists and tasks, links and
 /// autolinks, rules, tables, HTML and escapes. Markup characters are dimmed; nothing is styled inside code.
@@ -76,29 +82,31 @@ final class SyntaxHighlighter {
 
     // MARK: Styling
 
-    private static func regex(_ pattern: String, _ options: NSRegularExpression.Options = []) -> NSRegularExpression {
+    static func regex(_ pattern: String, _ options: NSRegularExpression.Options = []) -> NSRegularExpression {
         try! NSRegularExpression(pattern: pattern, options: options)
     }
 
     // Block level, matched per line.
-    private static let atxHeading = regex(#"^ {0,3}(#{1,6})(?:[ \t]+|$)(.*?)(?:[ \t]+#+)?[ \t]*$"#)
-    private static let setextUnderline = regex(#"^ {0,3}(=+|-+)[ \t]*$"#)
-    private static let rule = regex(#"^ {0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$"#)
-    private static let quote = regex(#"^ {0,3}(?:>[ \t]?)+"#)
+    static let atxHeading = regex(#"^ {0,3}(#{1,6})(?:[ \t]+|$)(.*?)(?:[ \t]+#+)?[ \t]*$"#)
+    static let setextUnderline = regex(#"^ {0,3}(=+|-+)[ \t]*$"#)
+    static let rule = regex(#"^ {0,3}(?:(?:\*[ \t]*){3,}|(?:-[ \t]*){3,}|(?:_[ \t]*){3,})$"#)
+    static let quote = regex(#"^ {0,3}(?:>[ \t]?)+"#)
     private static let listItem = regex(#"^[ \t]*(?:[-*+]|\d{1,9}[.)])[ \t]+(\[[ xX]\][ \t]+)?"#)
-    private static let tableSeparator = regex(#"^[ \t]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*$"#)
+    static let tableSeparator = regex(#"^[ \t]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*$"#)
     private static let tableRow = regex(#"^[ \t]*\|"#)
-    private static let pipe = regex(#"(?<!\\)\|"#)
+    static let pipe = regex(#"(?<!\\)\|"#)
 
     // Inline.
-    private static let codeSpan = regex(#"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)"#)
+    static let codeSpan = regex(#"(?<!`)(`+)(?!`)(.+?)(?<!`)\1(?!`)"#)
     private static let link = regex(#"(!?\[)([^\]\n]*)(\]\([^)\n]*\))"#)
     private static let autolink = regex(#"<(?:https?://|mailto:)[^>\s]+>|(?<![<(\w/])https?://[^\s<>()\[\]]+"#)
-    private static let bold = regex(#"(?<!\\)(\*\*|__)(?=\S)(.+?)(?<=\S)(?<!\\)\1"#)
-    private static let italic = regex(#"(?<![*\w\\])\*(?=[^\s*])(.+?)(?<=[^\s*\\])\*(?![*\w])|(?<![_\w\\])_(?=[^\s_])(.+?)(?<=[^\s_\\])_(?![_\w])"#)
+    static let boldStars = regex(#"(?<!\\)\*\*(?=\S)(.+?)(?<=\S)(?<!\\)\*\*"#)
+    /// Like `_`, `__` doesn't work inside a word: `snake__double__name` stays as it is.
+    static let boldUnderscores = regex(#"(?<![\w\\])__(?=\S)(.+?)(?<=\S)__(?!\w)"#)
+    static let italic = regex(#"(?<![*\w\\])\*(?=[^\s*])(.+?)(?<=[^\s*\\])\*(?![*\w])|(?<![_\w\\])_(?=[^\s_])(.+?)(?<=[^\s_\\])_(?![_\w])"#)
     private static let strike = regex(#"(?<!\\)~~(?=\S)(.+?)(?<=\S)~~"#)
     private static let html = regex(#"<!--.*?-->|</?[A-Za-z][A-Za-z0-9-]*(?:\s[^<>\n]*)?/?>"#)
-    private static let escape = regex(#"\\(?=[\\`*_{}\[\]()#+\-.!|~<>])"#)
+    static let escape = regex(#"\\(?=[\\`*_{}\[\]()#+\-.!|~<>])"#)
 
     static func style(_ storage: NSTextStorage, in range: NSRange, fences: [Fence]) {
         let string = storage.string as NSString
@@ -110,6 +118,7 @@ final class SyntaxHighlighter {
         storage.addAttributes([.font: EditorStyle.bodyFont, .foregroundColor: NSColor.textColor], range: range)
         storage.removeAttribute(.strikethroughStyle, range: range)
         storage.removeAttribute(.backgroundColor, range: range)
+        storage.removeAttribute(.ferryHideableMarker, range: range)
 
         var protected: [NSRange] = []
         for fence in fences where NSIntersectionRange(fence.range, range).length > 0 {
@@ -134,9 +143,15 @@ final class SyntaxHighlighter {
 
             if let match = atxHeading.firstMatch(in: text as String, range: local) {
                 storage.addAttribute(.font, value: EditorStyle.headingFont(level: match.range(at: 1).length), range: line)
-                dim(storage, shifted(match.range(at: 1)))
-                let closing = NSRange(location: NSMaxRange(match.range(at: 2)), length: NSMaxRange(local) - NSMaxRange(match.range(at: 2)))
-                if closing.length > 0 { dim(storage, shifted(closing)) }
+                let content = match.range(at: 2)
+                if content.length > 0 {
+                    // The #s and the space after them, so a hidden heading doesn't start with a gap.
+                    hideable(storage, shifted(NSRange(location: 0, length: content.location)))
+                } else {
+                    dim(storage, shifted(match.range(at: 1)))
+                }
+                let closing = NSRange(location: NSMaxRange(content), length: NSMaxRange(local) - NSMaxRange(content))
+                if closing.length > 0 { content.length > 0 ? hideable(storage, shifted(closing)) : dim(storage, shifted(closing)) }
                 continue
             }
             // Setext: a text line followed by === (level 1) or --- (level 2).
@@ -190,34 +205,39 @@ final class SyntaxHighlighter {
         each(codeSpan) { match in
             storage.addAttribute(.font, value: EditorStyle.codeFont, range: match.range(at: 2))
             storage.addAttribute(.backgroundColor, value: EditorStyle.codeBackground, range: match.range(at: 2))
-            dim(storage, match.range(at: 1))
-            dim(storage, NSRange(location: NSMaxRange(match.range(at: 2)), length: match.range(at: 1).length))
+            hideable(storage, match.range(at: 1))
+            hideable(storage, NSRange(location: NSMaxRange(match.range(at: 2)), length: match.range(at: 1).length))
         }
         protected += codeSpan.matches(in: text, range: range).map(\.range)
 
         each(html) { dim(storage, $0.range) }
         each(link) { match in
-            dim(storage, match.range(at: 1))
+            // An image link (`![alt](url)`, not yet downloaded or missing) stays visible: hiding it would
+            // leave nothing, or just the alt text, where the image should be.
+            let mark: (NSTextStorage, NSRange) -> Void = match.range(at: 1).length == 1 ? hideable : dim
+            mark(storage, match.range(at: 1))
             storage.addAttribute(.foregroundColor, value: EditorStyle.linkColor, range: match.range(at: 2))
-            dim(storage, match.range(at: 3))
+            mark(storage, match.range(at: 3))
         }
         each(autolink) { storage.addAttribute(.foregroundColor, value: EditorStyle.linkColor, range: $0.range) }
-        each(bold) { match in
-            addTrait(.boldFontMask, storage, match.range)
-            dim(storage, match.range(at: 1))
-            dim(storage, NSRange(location: NSMaxRange(match.range) - match.range(at: 1).length, length: match.range(at: 1).length))
+        for bold in [boldStars, boldUnderscores] {
+            each(bold) { match in
+                addTrait(.boldFontMask, storage, match.range)
+                hideable(storage, NSRange(location: match.range.location, length: 2))
+                hideable(storage, NSRange(location: NSMaxRange(match.range) - 2, length: 2))
+            }
         }
         each(italic) { match in
             addTrait(.italicFontMask, storage, match.range)
-            dim(storage, NSRange(location: match.range.location, length: 1))
-            dim(storage, NSRange(location: NSMaxRange(match.range) - 1, length: 1))
+            hideable(storage, NSRange(location: match.range.location, length: 1))
+            hideable(storage, NSRange(location: NSMaxRange(match.range) - 1, length: 1))
         }
         each(strike) { match in
             storage.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: match.range(at: 1))
-            dim(storage, NSRange(location: match.range.location, length: 2))
-            dim(storage, NSRange(location: NSMaxRange(match.range) - 2, length: 2))
+            hideable(storage, NSRange(location: match.range.location, length: 2))
+            hideable(storage, NSRange(location: NSMaxRange(match.range) - 2, length: 2))
         }
-        each(escape) { dim(storage, $0.range) }
+        each(escape) { hideable(storage, $0.range) }
     }
 
     // MARK: Helpers
@@ -225,6 +245,13 @@ final class SyntaxHighlighter {
     private static func dim(_ storage: NSTextStorage, _ range: NSRange) {
         guard range.length > 0, range.location != NSNotFound else { return }
         storage.addAttribute(.foregroundColor, value: EditorStyle.markerColor, range: range)
+    }
+
+    /// Dimmed, and hidden when "Hide Markdown Syntax" is on.
+    private static func hideable(_ storage: NSTextStorage, _ range: NSRange) {
+        guard range.length > 0, range.location != NSNotFound else { return }
+        dim(storage, range)
+        storage.addAttribute(.ferryHideableMarker, value: true, range: range)
     }
 
     private static func addTrait(_ trait: NSFontTraitMask, _ storage: NSTextStorage, _ range: NSRange) {

@@ -44,6 +44,17 @@ final class TwoStepClipboardTests: XCTestCase {
         XCTAssertEqual(pasteboard.string(forType: .string), "Intro <tag> & \"q\"\n[Image 1: shot]\nEnd")
     }
 
+    func testSecondStepTextCanLeaveOutSyntax() {
+        let editor = makeEditor(markdown: "## Intro **now**\n![shot](<assets/my shot.png>)\n- End", documentURL: docURL, copyMode: .twoPastes)
+        editor.stripMarkdownOnCopy = { true }
+        editor.selectAll(nil)
+        let pasteboard = testPasteboard()
+        editor.copySelection(to: pasteboard)
+        XCTAssertEqual(readFileURLs(pasteboard).map(\.path), [image.path])
+        pause()
+        XCTAssertEqual(pasteboard.string(forType: .string), "Intro now\n[Image 1: shot]\nEnd")
+    }
+
     func testNoSwitchUntilAnAppReadsTheImages() {
         let editor = makeEditor(markdown: markdown, documentURL: docURL, copyMode: .twoPastes)
         editor.selectAll(nil)

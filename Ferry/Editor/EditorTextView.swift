@@ -10,6 +10,8 @@ final class EditorTextView: NSTextView {
     var clipboardAttachmentsDirectory = ClipboardAttachments.defaultDirectory
     /// The Settings choice for selections with images (tests set it directly).
     var copyMode: () -> CopyMode = { CopyMode.current }
+    /// "Ignore Markdown Syntax When Copying" (tests set it directly). ⌥⌘C and pasting into Ferry keep the syntax.
+    var stripMarkdownOnCopy: () -> Bool = { Preferences.stripMarkdownOnCopy }
     var twoStepClipboard = TwoStepClipboard.shared
     var onePasteController: () -> OnePasteController = { OnePasteController.shared }
 
@@ -105,10 +107,12 @@ final class EditorTextView: NSTextView {
     @discardableResult
     func copySelection(to pasteboard: NSPasteboard) -> Bool {
         guard let fragment = selectedFragment() else { return false }
-        if copyMode() == .oneCommandV, let payload = OnePastePayload(fragment: fragment) {
+        let strip = stripMarkdownOnCopy()
+        let hasText = TwoStepClipboard.hasText(strip ? fragment.strippingMarkdown() : fragment) // what other apps get
+        if copyMode() == .oneCommandV, let payload = OnePastePayload(fragment: fragment, stripMarkdown: strip) {
             let directory = clipboardAttachmentsDirectory, name = attachmentName()
             let armed = onePasteController().arm(payload) { pasteboard in
-                FerryPasteboard.writeForAI(fragment, to: pasteboard, attachmentsDirectory: directory, documentName: name)
+                FerryPasteboard.writeForAI(fragment, to: pasteboard, attachmentsDirectory: directory, documentName: name, stripMarkdown: strip)
             }
             if armed {
                 onCopyToast?("Copied text + \(imagesLabel(payload.images.count)): one ⌘V pastes both")
@@ -116,22 +120,22 @@ final class EditorTextView: NSTextView {
             }
             // No Accessibility permission: copy as attachments and say why.
             onePasteController().standDown()
-            FerryPasteboard.writeForAI(fragment, to: pasteboard, attachmentsDirectory: directory, documentName: name)
+            FerryPasteboard.writeForAI(fragment, to: pasteboard, attachmentsDirectory: directory, documentName: name, stripMarkdown: strip)
             onCopyToast?("One ⌘V needs Accessibility access (Ferry › Settings). Copied as attachments.")
             return true
         }
         onePasteController().standDown() // this copy replaces any armed One ⌘V copy
         if copyMode() == .twoPastes {
-            let count = twoStepClipboard.write(fragment, to: pasteboard)
+            let count = twoStepClipboard.write(fragment, to: pasteboard, stripMarkdown: strip)
             if count > 0 {
-                onCopyToast?(TwoStepClipboard.hasText(fragment) ?"Paste twice: \(imagesLabel(count)), then text" : "Copied \(imagesLabel(count))")
+                onCopyToast?(hasText ? "Paste twice: \(imagesLabel(count)), then text" : "Copied \(imagesLabel(count))")
                 return true
             }
         }
-        let attached = FerryPasteboard.writeForAI(fragment, to: pasteboard,
-                                                  attachmentsDirectory: clipboardAttachmentsDirectory, documentName: attachmentName())
+        let attached = FerryPasteboard.writeForAI(fragment, to: pasteboard, attachmentsDirectory: clipboardAttachmentsDirectory,
+                                                  documentName: attachmentName(), stripMarkdown: strip)
         if attached > 0 {
-            onCopyToast?(TwoStepClipboard.hasText(fragment) ? "Copied text + \(imagesLabel(attached))" : "Copied \(imagesLabel(attached))")
+            onCopyToast?(hasText ? "Copied text + \(imagesLabel(attached))" : "Copied \(imagesLabel(attached))")
         }
         return true
     }
@@ -196,6 +200,7 @@ final class EditorTextView: NSTextView {
         set {
             var attributes = newValue
             attributes[.ferryPendingImage] = nil
+            attributes[.ferryHideableMarker] = nil
             super.typingAttributes = attributes
         }
     }
@@ -288,7 +293,7 @@ final class EditorTextView: NSTextView {
 
     override func writeSelection(to pboard: NSPasteboard, types: [NSPasteboard.PasteboardType]) -> Bool {
         guard let fragment = selectedFragment() else { return false }
-        FerryPasteboard.writeForAI(fragment, to: pboard, attachFiles: false)
+        FerryPasteboard.writeForAI(fragment, to: pboard, attachFiles: false, stripMarkdown: stripMarkdownOnCopy())
         return true
     }
 }

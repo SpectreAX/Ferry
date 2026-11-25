@@ -149,6 +149,31 @@ final class CopyPasteTests: XCTestCase {
         XCTAssertNotNil(pasteboard.data(forType: FerryPasteboard.fragmentType))
     }
 
+    // MARK: Ignore Markdown Syntax When Copying
+
+    func testIgnoringSyntaxStripsWhatOtherAppsGetButNotFerry() throws {
+        let source = "# Plan\n- **Bold** step\n![shot](<assets/my shot.png>)\nSee [docs](https://x.com)"
+        let editor = makeEditor(markdown: source, documentURL: docURL)
+        editor.stripMarkdownOnCopy = { true }
+        editor.selectAll(nil)
+        let pasteboard = testPasteboard()
+        editor.copySelection(to: pasteboard)
+
+        let stripped = "Plan\nBold step\n![shot](<\(image.path)>)\nSee docs"
+        XCTAssertEqual(pasteboard.string(forType: .string), stripped)
+        XCTAssertTrue(try XCTUnwrap(pasteboard.string(forType: .html)).contains("Plan<br>Bold step<br><img"))
+        let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? []
+        XCTAssertEqual(try String(contentsOf: try XCTUnwrap(urls.first), encoding: .utf8), stripped, "the .md attachment too")
+
+        // Pasting back into Ferry restores the Markdown; ⌥⌘C still copies it.
+        editor.setSelectedRange(NSRange(location: editor.string.utf16.count, length: 0))
+        editor.paste(from: pasteboard)
+        XCTAssertEqual(editor.markdown, source + source)
+        editor.selectAll(nil)
+        editor.copyPlainMarkdown(to: pasteboard)
+        XCTAssertEqual(pasteboard.string(forType: .string), source + source)
+    }
+
     // MARK: ⌥⌘C
 
     func testCopyAsPlainMarkdownWritesOnlyRelativeString() {

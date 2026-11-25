@@ -11,11 +11,13 @@ struct OnePastePayload: Equatable {
     var textMayBecomeAttachment: Bool { text.count >= Self.attachmentThreshold }
 
     /// Only selections with both text and images need One ⌘V; others paste fine in one step.
-    init?(fragment: Fragment) {
+    /// `stripMarkdown`: the text leaves out Markdown syntax; the Ferry fragment keeps it.
+    init?(fragment: Fragment, stripMarkdown: Bool = false) {
         let images = FerryPasteboard.attachableImageURLs(fragment)
-        guard !images.isEmpty, TwoStepClipboard.hasText(fragment) else { return nil }
+        let textFragment = stripMarkdown ? fragment.strippingMarkdown() : fragment
+        guard !images.isEmpty, TwoStepClipboard.hasText(textFragment) else { return nil }
         self.images = images
-        text = ClipboardRenderer.textWithImagePlaceholders(fragment, attached: images.map(\.path))
+        text = ClipboardRenderer.textWithImagePlaceholders(textFragment, attached: images.map(\.path))
         self.fragment = try? JSONEncoder().encode(fragment)
     }
 }

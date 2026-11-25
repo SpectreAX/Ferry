@@ -179,4 +179,116 @@ final class MarkdownSyntaxTests: XCTestCase {
         XCTAssertEqual(type("plain"), "plain\n")
         XCTAssertEqual(editor.selectedRange().location, ("plain\n" as NSString).length)
     }
+
+    // MARK: Hide Markdown Syntax
+
+    private func hideable(_ storage: NSTextStorage, _ index: Int) -> Bool {
+        storage.attribute(.ferryHideableMarker, at: index, effectiveRange: nil) != nil
+    }
+
+    func testHideableMarkers() {
+        let s = styled("# Title\n**b** *i* ~~s~~ `c` [l](u) \\* ![img](x.png)\n- item\n1. one\n> q\n| a | b |\n```\ncode\n```\n")
+        for marker in ["# ", "**", "*i", "~~", "`c", "[l", "](u)", "\\*"] {
+            XCTAssertTrue(hideable(s, at(s, marker)), marker)
+        }
+        XCTAssertTrue(hideable(s, at(s, "# ") + 1), "the space after #, so a hidden heading starts flush")
+        for visible in ["Title", "b**", "i*", "s~~", "c`", "l](", "![img", "](x.png)", "- item", "1. one", "> q", "| a", "```"] {
+            XCTAssertFalse(hideable(s, at(s, visible)), visible)
+        }
+    }
+
+    func testHidingIsLayoutOnlyAndFollowsTheCursor() throws {
+        let markdown = "# Title\n\nSome **bold** text\n"
+        let editor = makeEditor(markdown: markdown, documentURL: try makeTempDirectory(self).appendingPathComponent("n.md"))
+        let storage = editor.textStorage!
+        SyntaxHighlighter().highlightAll(storage)
+        let hider = SyntaxHider(textView: editor)
+        let layoutManager = editor.layoutManager!
+        func isHidden(_ index: Int) -> Bool {
+            layoutManager.ensureGlyphs(forCharacterRange: NSRange(location: 0, length: storage.length))
+            return layoutManager.propertyForGlyph(at: layoutManager.glyphIndexForCharacter(at: index)).contains(.null)
+        }
+        let bold = (storage.string as NSString).range(of: "**").location
+
+        editor.setSelectedRange(NSRange(location: 1, length: 0)) // in the heading
+        hider.setEnabled(true)
+        XCTAssertFalse(isHidden(0), "the cursor's paragraph shows its syntax")
+        XCTAssertTrue(isHidden(bold))
+        XCTAssertFalse(isHidden(bold + 2))
+
+        editor.setSelectedRange(NSRange(location: bold + 3, length: 0))
+        hider.update()
+        XCTAssertTrue(isHidden(0))
+        XCTAssertTrue(isHidden(1), "with the space after #")
+        XCTAssertFalse(isHidden(bold))
+
+        editor.selectAll(nil) // a selection keeps the revealed paragraph
+        hider.update()
+        XCTAssertFalse(isHidden(bold))
+        XCTAssertTrue(isHidden(0))
+
+        hider.setEnabled(false)
+        XCTAssertFalse(isHidden(0))
+        XCTAssertFalse(isHidden(bold))
+        XCTAssertEqual(editor.markdown, markdown, "the text never changes")
+    }
+
+    func testRestyledLinesHideRightAwayAfterAMultiLinePaste() throws {
+        let editor = makeEditor(markdown: "Top line\n", documentURL: try makeTempDirectory(self).appendingPathComponent("n.md"))
+        let storage = editor.textStorage!
+        let highlighter = SyntaxHighlighter()
+        highlighter.highlightAll(storage)
+        let hider = SyntaxHider(textView: editor)
+        editor.setSelectedRange(NSRange(location: 0, length: 0))
+        hider.setEnabled(true)
+        let layoutManager = editor.layoutManager!
+        layoutManager.ensureLayout(for: editor.textContainer!) // glyphs exist before the edit, as on screen
+
+        let pasted = "See [link](https://x.test) and ~~old~~ and \\*\nMore [two](u)\n"
+        storage.replaceCharacters(in: NSRange(location: storage.length, length: 0), with: pasted)
+        // As MarkdownEditor does after an edit: the restyle alone must refresh the glyphs.
+        highlighter.update(storage, edited: NSRange(location: 9, length: (pasted as NSString).length))
+        hider.update()
+
+        func isHidden(_ marker: String) -> Bool {
+            let index = (storage.string as NSString).range(of: marker).location
+            layoutManager.ensureGlyphs(forCharacterRange: NSRange(location: 0, length: storage.length))
+            return layoutManager.propertyForGlyph(at: layoutManager.glyphIndexForCharacter(at: index)).contains(.null)
+        }
+        for marker in ["[link", "](https", "~~old", "\\*", "[two"] { XCTAssertTrue(isHidden(marker), marker) }
+        XCTAssertFalse(isHidden("Top"))
+    }
+
+    func testRemovingAFenceHidesTheSyntaxThatWasCode() throws {
+        let editor = makeEditor(markdown: "Top\n```\nSee [link](u) ~~old~~ \\*\n", documentURL: try makeTempDirectory(self).appendingPathComponent("n.md"))
+        let storage = editor.textStorage!
+        let highlighter = SyntaxHighlighter()
+        highlighter.highlightAll(storage)
+        let hider = SyntaxHider(textView: editor)
+        editor.setSelectedRange(NSRange(location: 0, length: 0))
+        hider.setEnabled(true)
+        let layoutManager = editor.layoutManager!
+        layoutManager.ensureLayout(for: editor.textContainer!)
+        func isHidden(_ marker: String) -> Bool {
+            let index = (storage.string as NSString).range(of: marker).location
+            layoutManager.ensureGlyphs(forCharacterRange: NSRange(location: 0, length: storage.length))
+            return layoutManager.propertyForGlyph(at: layoutManager.glyphIndexForCharacter(at: index)).contains(.null)
+        }
+        XCTAssertFalse(isHidden("[link"), "inside an unclosed code block")
+
+        let fence = (storage.string as NSString).range(of: "```\n")
+        storage.replaceCharacters(in: fence, with: "")
+        highlighter.update(storage, edited: NSRange(location: fence.location, length: 0)) // fence count changed: full restyle
+        hider.update()
+        for marker in ["[link", "](u)", "~~old", "\\*"] { XCTAssertTrue(isHidden(marker), marker) }
+    }
+
+    func testDoubleUnderscoresInsideAWordAreNotBold() {
+        let s = styled("snake__double__name and __bold__ here")
+        XCTAssertFalse(has(.boldFontMask, font(s, "double")))
+        XCTAssertFalse(hideable(s, at(s, "__double")))
+        XCTAssertTrue(has(.boldFontMask, font(s, "bold")))
+        XCTAssertTrue(hideable(s, at(s, "__bold")))
+        XCTAssertEqual(MarkdownStripper.strip("snake__double__name and __bold__ here"), "snake__double__name and bold here")
+    }
 }
