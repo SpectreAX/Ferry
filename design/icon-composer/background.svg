@@ -1,0 +1,10 @@
+<!-- Icon Composer layer 1 (bottom): full-bleed background. Icon Composer applies the shape and glass. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="ferry-bg" x1="0" y1="0" x2="0" y2="1024" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4AA3FF"/>
+      <stop offset="1" stop-color="#0A4BD1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#ferry-bg)"/>
+</svg>

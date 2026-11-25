@@ -1,0 +1,6 @@
+<!-- Icon Composer layer 3 (top): the wave, flat. Same scaling as glyph.svg. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <g transform="scale(1.242718) translate(-100,-78)">
+    <path d="M 262 702 C 304 670 345 670 387 702 S 470 734 512 702 S 595 670 637 702 S 720 734 762 702" fill="none" stroke="#FFFFFF" stroke-width="30" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,0 +1,10 @@
+build/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+.DS_Store
+
+# Local scratch/test files and icon references
+/Test.md
+/image.png
+/assets/
+design/reference/

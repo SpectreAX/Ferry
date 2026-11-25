@@ -1,0 +1,9 @@
+<!-- Icon Composer layer 2: the boat (page with folded corner + hull), flat. Scaled from the 824 body
+     of ferry-icon.svg to the full 1024 canvas (×1.2427, origin at the body's corner). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <g transform="scale(1.242718) translate(-100,-78)">
+    <polygon points="392,232 568,232 632,296 632,480 392,480" fill="#FFFFFF"/>
+    <polygon points="568,232 568,296 632,296" fill="#9CC6FF"/>
+    <polygon points="292,498 732,498 642,632 382,632" fill="#FFFFFF"/>
+  </g>
+</svg>

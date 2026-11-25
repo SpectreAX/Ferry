@@ -1,0 +1,31 @@
+import SwiftUI
+
+struct ContentView: View {
+    @ObservedObject var document: MarkdownDocument
+    let fileURL: URL?
+    @State private var toast: String?
+    @State private var toastTask: Task<Void, Never>?
+
+    var body: some View {
+        MarkdownEditor(document: document, fileURL: fileURL, onCopyToast: showCopyToast)
+            .frame(minWidth: 480, minHeight: 320)
+            .overlay(alignment: .bottom) {
+                if let toast {
+                    ToastView(text: toast)
+                        .padding(.bottom, 18)
+                        .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+            }
+            .animation(.easeOut(duration: 0.2), value: toast)
+    }
+
+    private func showCopyToast(_ message: String) {
+        toast = message
+        toastTask?.cancel()
+        toastTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled else { return }
+            toast = nil
+        }
+    }
+}

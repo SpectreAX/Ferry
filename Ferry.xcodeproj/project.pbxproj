@@ -1,0 +1,636 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04C94E69E16AF6B186A41A92 /* MarkdownDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A8213EC6ABEF82B3D6949E3 /* MarkdownDocument.swift */; };
+		09E70470BF3682838EF5944E /* RichPasteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB10231BBD51BA413E851AFF /* RichPasteTests.swift */; };
+		12359D16FAA481F37AEEF8C5 /* TargetObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14331CC3B4118BCE2EEE3C30 /* TargetObserver.swift */; };
+		13AD54D375AD438FFA8EDB9B /* MarkdownCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7151B13D09E90392EE76B847 /* MarkdownCodec.swift */; };
+		16932ED44CC744E4FC30EBF6 /* CopyPasteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */; };
+		1A22A8265664AE2E5D4F58FA /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06069725BC2B5F43B304466F /* ToastView.swift */; };
+		22C9E66EE187D7D7753A1BB5 /* OnePasteEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */; };
+		271150B0C0D73CD108575664 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A2CAA5DADFF35F62C82100 /* SettingsView.swift */; };
+		291CE7DA310C6EC30AC30DD8 /* PasteEventTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */; };
+		2981BA957C1F7AAA838222DF /* TwoStepClipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */; };
+		353089E9F47739BC1546AFC3 /* PasteHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04528C54F46589E464978633 /* PasteHUD.swift */; };
+		39545178FFEF3F1819BAE7F3 /* OnePastePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97715B750238D08351C1003E /* OnePastePayload.swift */; };
+		4385878646297D63D36086F0 /* KeystrokePoster.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBE52C5FB5D978135B00AFA /* KeystrokePoster.swift */; };
+		49E6134BB92F3BFBF84AADAE /* TargetSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = D454583DC98E240B2738FA9D /* TargetSnapshot.swift */; };
+		4C5D94EEB1023C3CBFE77107 /* AttachmentCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36040F77A8954889FD17B3F7 /* AttachmentCounter.swift */; };
+		4CCD6A9AE3D363F4EA1AADFF /* CopyMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7440D480C3C34835CE121013 /* CopyMode.swift */; };
+		53582951E663B5585EB51C85 /* MarkdownCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */; };
+		55F45010FDDC38B607D3277F /* AssetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFC1EA43136A369B2376513 /* AssetStore.swift */; };
+		5B1F70ADF68572DF14A6A1AC /* PasteImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */; };
+		63D23764D1188A56C025BC89 /* OnePasteMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */; };
+		65C08B558331B328A4882ACD /* FerryPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A668D7C79DE9C0563699820C /* FerryPasteboard.swift */; };
+		68DE408DF9E2524ABE6A5AD9 /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFD7B542EFA4C45FB0F6FAD /* SyntaxHighlighter.swift */; };
+		6CB3441F77483BC9B3DA751F /* OnePasteControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6762269D130401202863D122 /* OnePasteControllerTests.swift */; };
+		6FEF11D090F43505599C95BC /* EditorTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E2E149C77F6951668D3E13 /* EditorTextView.swift */; };
+		7AA9FA21E246B4F675951004 /* ClipboardRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */; };
+		83AA3208EB83A273FE8D728D /* ClipboardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB783964811F20202D9D007 /* ClipboardRenderer.swift */; };
+		843AFB8AC5474ECB0798E7BD /* OnePasteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A821A8AAF317AD8A4FF5F0B9 /* OnePasteController.swift */; };
+		8948C297B1F9797D7E098DE3 /* PasteLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D4AF5D80BB35C542E626CE /* PasteLog.swift */; };
+		90689B7B8190911054D5BBE5 /* AppPasteRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21173FB22033ABD0D8F5E5BE /* AppPasteRules.swift */; };
+		94E62F75EC1FD572B7D90D12 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246213B0C38BCE420A8D6698 /* ContentView.swift */; };
+		96AF6EF70DF240DAAE65A68C /* TwoStepClipboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54999AE6576EA8564DA68374 /* TwoStepClipboardTests.swift */; };
+		9F7B31B23286EDD5FC516C17 /* FerryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBF5507E1D775853431DEE2 /* FerryApp.swift */; };
+		A128646F22044AAE0FAA3286 /* EditorStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */; };
+		A14D3AC96BFF24684722CDD2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 517DC657D62C9A02309F6C21 /* Assets.xcassets */; };
+		A27D65B9169C61BBEDDE3743 /* ListContinuation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCE06F83B3597EE88162E470 /* ListContinuation.swift */; };
+		A9F3F38A34EB7076B105B544 /* ClipboardAttachments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0828123F021C47AEBB66C8 /* ClipboardAttachments.swift */; };
+		AEB72D1705957B5607A8FC55 /* RichClipboardReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0CF786219E636A081CE0D55 /* RichClipboardReader.swift */; };
+		AEDF7769FCA98B6D19DAD42F /* AttachmentCounterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB5014A3700D1E2765BCC48F /* AttachmentCounterTests.swift */; };
+		B039B085DAA1CBCF7E18F1C6 /* MarkdownSyntaxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40003665F86DB88A08227A91 /* MarkdownSyntaxTests.swift */; };
+		B4F11CAE2CE6978F6B01060D /* MarkdownEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB04985C0AA6CA56FB815FFA /* MarkdownEditor.swift */; };
+		C5E64DF8FE991F46E89B3011 /* TargetProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C400A98CC31B6662DE2EE6E0 /* TargetProfiles.swift */; };
+		CA67DC80E640BB699734E9E0 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24904631FDF8DDA05F751958 /* TestSupport.swift */; };
+		E3810F28265F92ED41D30233 /* OnePasteMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */; };
+		E58562E83B1A1B1FA5F5E10B /* AppPasteRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */; };
+		EC53CE93EC811FB21988B043 /* ImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D63DC5D930DA6754D9D5D752 /* ImageAttachment.swift */; };
+		F421F53BB6549765953DCFFD /* RemoteImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */; };
+		F7DF2FA635C480357497AF5A /* Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FA9E31E62CA729BB44AFC1EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1090D252864087CBF52BB642 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47968F6FCA83AD5FAD423056;
+			remoteInfo = Ferry;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04528C54F46589E464978633 /* PasteHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteHUD.swift; sourceTree = "<group>"; };
+		05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteMachine.swift; sourceTree = "<group>"; };
+		06069725BC2B5F43B304466F /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageLoader.swift; sourceTree = "<group>"; };
+		14331CC3B4118BCE2EEE3C30 /* TargetObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetObserver.swift; sourceTree = "<group>"; };
+		21173FB22033ABD0D8F5E5BE /* AppPasteRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPasteRules.swift; sourceTree = "<group>"; };
+		246213B0C38BCE420A8D6698 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		24904631FDF8DDA05F751958 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		2A8213EC6ABEF82B3D6949E3 /* MarkdownDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownDocument.swift; sourceTree = "<group>"; };
+		2FF03FFD5411E5D6DACB174F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPasteTests.swift; sourceTree = "<group>"; };
+		36040F77A8954889FD17B3F7 /* AttachmentCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCounter.swift; sourceTree = "<group>"; };
+		38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteMachineTests.swift; sourceTree = "<group>"; };
+		3BBF5507E1D775853431DEE2 /* FerryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerryApp.swift; sourceTree = "<group>"; };
+		40003665F86DB88A08227A91 /* MarkdownSyntaxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownSyntaxTests.swift; sourceTree = "<group>"; };
+		49D4AF5D80BB35C542E626CE /* PasteLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteLog.swift; sourceTree = "<group>"; };
+		4FFD7B542EFA4C45FB0F6FAD /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
+		517DC657D62C9A02309F6C21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownCodecTests.swift; sourceTree = "<group>"; };
+		54999AE6576EA8564DA68374 /* TwoStepClipboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepClipboardTests.swift; sourceTree = "<group>"; };
+		5E0828123F021C47AEBB66C8 /* ClipboardAttachments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardAttachments.swift; sourceTree = "<group>"; };
+		5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fragment.swift; sourceTree = "<group>"; };
+		6762269D130401202863D122 /* OnePasteControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteControllerTests.swift; sourceTree = "<group>"; };
+		67A2CAA5DADFF35F62C82100 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		6BB783964811F20202D9D007 /* ClipboardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRenderer.swift; sourceTree = "<group>"; };
+		6EF70CFFC458227B56D9A062 /* FerryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FerryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7151B13D09E90392EE76B847 /* MarkdownCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownCodec.swift; sourceTree = "<group>"; };
+		7440D480C3C34835CE121013 /* CopyMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyMode.swift; sourceTree = "<group>"; };
+		8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorStyle.swift; sourceTree = "<group>"; };
+		93E2E149C77F6951668D3E13 /* EditorTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTextView.swift; sourceTree = "<group>"; };
+		94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteEnvironment.swift; sourceTree = "<group>"; };
+		97715B750238D08351C1003E /* OnePastePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePastePayload.swift; sourceTree = "<group>"; };
+		9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRendererTests.swift; sourceTree = "<group>"; };
+		A0CF786219E636A081CE0D55 /* RichClipboardReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichClipboardReader.swift; sourceTree = "<group>"; };
+		A668D7C79DE9C0563699820C /* FerryPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerryPasteboard.swift; sourceTree = "<group>"; };
+		A821A8AAF317AD8A4FF5F0B9 /* OnePasteController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteController.swift; sourceTree = "<group>"; };
+		BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPasteRulesTests.swift; sourceTree = "<group>"; };
+		C400A98CC31B6662DE2EE6E0 /* TargetProfiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetProfiles.swift; sourceTree = "<group>"; };
+		CCE06F83B3597EE88162E470 /* ListContinuation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListContinuation.swift; sourceTree = "<group>"; };
+		D454583DC98E240B2738FA9D /* TargetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetSnapshot.swift; sourceTree = "<group>"; };
+		D63DC5D930DA6754D9D5D752 /* ImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAttachment.swift; sourceTree = "<group>"; };
+		DB55C01B85819F5B1E23ED0E /* Ferry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ferry.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepClipboard.swift; sourceTree = "<group>"; };
+		EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteEventTap.swift; sourceTree = "<group>"; };
+		EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteImporter.swift; sourceTree = "<group>"; };
+		FB04985C0AA6CA56FB815FFA /* MarkdownEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownEditor.swift; sourceTree = "<group>"; };
+		FB10231BBD51BA413E851AFF /* RichPasteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichPasteTests.swift; sourceTree = "<group>"; };
+		FB5014A3700D1E2765BCC48F /* AttachmentCounterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCounterTests.swift; sourceTree = "<group>"; };
+		FEFC1EA43136A369B2376513 /* AssetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetStore.swift; sourceTree = "<group>"; };
+		FFBE52C5FB5D978135B00AFA /* KeystrokePoster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeystrokePoster.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0599806768B6403551A0A95D /* Paste */ = {
+			isa = PBXGroup;
+			children = (
+				21173FB22033ABD0D8F5E5BE /* AppPasteRules.swift */,
+				36040F77A8954889FD17B3F7 /* AttachmentCounter.swift */,
+				FFBE52C5FB5D978135B00AFA /* KeystrokePoster.swift */,
+				A821A8AAF317AD8A4FF5F0B9 /* OnePasteController.swift */,
+				94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */,
+				05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */,
+				97715B750238D08351C1003E /* OnePastePayload.swift */,
+				EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */,
+				04528C54F46589E464978633 /* PasteHUD.swift */,
+				49D4AF5D80BB35C542E626CE /* PasteLog.swift */,
+				14331CC3B4118BCE2EEE3C30 /* TargetObserver.swift */,
+				C400A98CC31B6662DE2EE6E0 /* TargetProfiles.swift */,
+				D454583DC98E240B2738FA9D /* TargetSnapshot.swift */,
+			);
+			path = Paste;
+			sourceTree = "<group>";
+		};
+		10C16DE4EC9B2945B00F1B24 = {
+			isa = PBXGroup;
+			children = (
+				931C4E6D4B9507869861019D /* Ferry */,
+				299A30099812C9B079CFDD7D /* FerryTests */,
+				DA4A792F3495AD3D71B767E5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		299A30099812C9B079CFDD7D /* FerryTests */ = {
+			isa = PBXGroup;
+			children = (
+				BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */,
+				FB5014A3700D1E2765BCC48F /* AttachmentCounterTests.swift */,
+				9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */,
+				35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */,
+				547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */,
+				40003665F86DB88A08227A91 /* MarkdownSyntaxTests.swift */,
+				6762269D130401202863D122 /* OnePasteControllerTests.swift */,
+				38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */,
+				FB10231BBD51BA413E851AFF /* RichPasteTests.swift */,
+				24904631FDF8DDA05F751958 /* TestSupport.swift */,
+				54999AE6576EA8564DA68374 /* TwoStepClipboardTests.swift */,
+			);
+			path = FerryTests;
+			sourceTree = "<group>";
+		};
+		445D614B652DF9D394181E4A /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				517DC657D62C9A02309F6C21 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		70536137ACB66B92B198F832 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				93E2E149C77F6951668D3E13 /* EditorTextView.swift */,
+				D63DC5D930DA6754D9D5D752 /* ImageAttachment.swift */,
+				FB04985C0AA6CA56FB815FFA /* MarkdownEditor.swift */,
+				4FFD7B542EFA4C45FB0F6FAD /* SyntaxHighlighter.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		931C4E6D4B9507869861019D /* Ferry */ = {
+			isa = PBXGroup;
+			children = (
+				2FF03FFD5411E5D6DACB174F /* Info.plist */,
+				E112174597D1383E0B8F0F7B /* App */,
+				70536137ACB66B92B198F832 /* Editor */,
+				EA2CFFA020199B58C19D3F26 /* Model */,
+				0599806768B6403551A0A95D /* Paste */,
+				445D614B652DF9D394181E4A /* Resources */,
+			);
+			path = Ferry;
+			sourceTree = "<group>";
+		};
+		DA4A792F3495AD3D71B767E5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DB55C01B85819F5B1E23ED0E /* Ferry.app */,
+				6EF70CFFC458227B56D9A062 /* FerryTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E112174597D1383E0B8F0F7B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				246213B0C38BCE420A8D6698 /* ContentView.swift */,
+				3BBF5507E1D775853431DEE2 /* FerryApp.swift */,
+				2A8213EC6ABEF82B3D6949E3 /* MarkdownDocument.swift */,
+				67A2CAA5DADFF35F62C82100 /* SettingsView.swift */,
+				06069725BC2B5F43B304466F /* ToastView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		EA2CFFA020199B58C19D3F26 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				FEFC1EA43136A369B2376513 /* AssetStore.swift */,
+				5E0828123F021C47AEBB66C8 /* ClipboardAttachments.swift */,
+				6BB783964811F20202D9D007 /* ClipboardRenderer.swift */,
+				7440D480C3C34835CE121013 /* CopyMode.swift */,
+				8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */,
+				A668D7C79DE9C0563699820C /* FerryPasteboard.swift */,
+				5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */,
+				CCE06F83B3597EE88162E470 /* ListContinuation.swift */,
+				7151B13D09E90392EE76B847 /* MarkdownCodec.swift */,
+				EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */,
+				0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */,
+				A0CF786219E636A081CE0D55 /* RichClipboardReader.swift */,
+				E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2E6B2CD53287D6B3B33815A7 /* FerryTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 889A015112CC79D7774E22C9 /* Build configuration list for PBXNativeTarget "FerryTests" */;
+			buildPhases = (
+				6B0695E2F0B2AA1461DDA937 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F444AFDA290F0A4B66B00F72 /* PBXTargetDependency */,
+			);
+			name = FerryTests;
+			packageProductDependencies = (
+			);
+			productName = FerryTests;
+			productReference = 6EF70CFFC458227B56D9A062 /* FerryTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		47968F6FCA83AD5FAD423056 /* Ferry */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 69C7A6005D152CC336E8B0BF /* Build configuration list for PBXNativeTarget "Ferry" */;
+			buildPhases = (
+				2E673119DEDD5180A0A8EDE9 /* Sources */,
+				191CE1EB1C71A24947C50624 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Ferry;
+			packageProductDependencies = (
+			);
+			productName = Ferry;
+			productReference = DB55C01B85819F5B1E23ED0E /* Ferry.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1090D252864087CBF52BB642 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					2E6B2CD53287D6B3B33815A7 = {
+						DevelopmentTeam = Y5HEVNEK2Q;
+						ProvisioningStyle = Manual;
+					};
+					47968F6FCA83AD5FAD423056 = {
+						DevelopmentTeam = Y5HEVNEK2Q;
+						ProvisioningStyle = Manual;
+					};
+				};
+			};
+			buildConfigurationList = 2B4DCD4B3FA34E4216A42330 /* Build configuration list for PBXProject "Ferry" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 10C16DE4EC9B2945B00F1B24;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = DA4A792F3495AD3D71B767E5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				47968F6FCA83AD5FAD423056 /* Ferry */,
+				2E6B2CD53287D6B3B33815A7 /* FerryTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		191CE1EB1C71A24947C50624 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A14D3AC96BFF24684722CDD2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2E673119DEDD5180A0A8EDE9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90689B7B8190911054D5BBE5 /* AppPasteRules.swift in Sources */,
+				55F45010FDDC38B607D3277F /* AssetStore.swift in Sources */,
+				4C5D94EEB1023C3CBFE77107 /* AttachmentCounter.swift in Sources */,
+				A9F3F38A34EB7076B105B544 /* ClipboardAttachments.swift in Sources */,
+				83AA3208EB83A273FE8D728D /* ClipboardRenderer.swift in Sources */,
+				94E62F75EC1FD572B7D90D12 /* ContentView.swift in Sources */,
+				4CCD6A9AE3D363F4EA1AADFF /* CopyMode.swift in Sources */,
+				A128646F22044AAE0FAA3286 /* EditorStyle.swift in Sources */,
+				6FEF11D090F43505599C95BC /* EditorTextView.swift in Sources */,
+				9F7B31B23286EDD5FC516C17 /* FerryApp.swift in Sources */,
+				65C08B558331B328A4882ACD /* FerryPasteboard.swift in Sources */,
+				F7DF2FA635C480357497AF5A /* Fragment.swift in Sources */,
+				EC53CE93EC811FB21988B043 /* ImageAttachment.swift in Sources */,
+				4385878646297D63D36086F0 /* KeystrokePoster.swift in Sources */,
+				A27D65B9169C61BBEDDE3743 /* ListContinuation.swift in Sources */,
+				13AD54D375AD438FFA8EDB9B /* MarkdownCodec.swift in Sources */,
+				04C94E69E16AF6B186A41A92 /* MarkdownDocument.swift in Sources */,
+				B4F11CAE2CE6978F6B01060D /* MarkdownEditor.swift in Sources */,
+				843AFB8AC5474ECB0798E7BD /* OnePasteController.swift in Sources */,
+				22C9E66EE187D7D7753A1BB5 /* OnePasteEnvironment.swift in Sources */,
+				E3810F28265F92ED41D30233 /* OnePasteMachine.swift in Sources */,
+				39545178FFEF3F1819BAE7F3 /* OnePastePayload.swift in Sources */,
+				291CE7DA310C6EC30AC30DD8 /* PasteEventTap.swift in Sources */,
+				353089E9F47739BC1546AFC3 /* PasteHUD.swift in Sources */,
+				5B1F70ADF68572DF14A6A1AC /* PasteImporter.swift in Sources */,
+				8948C297B1F9797D7E098DE3 /* PasteLog.swift in Sources */,
+				F421F53BB6549765953DCFFD /* RemoteImageLoader.swift in Sources */,
+				AEB72D1705957B5607A8FC55 /* RichClipboardReader.swift in Sources */,
+				271150B0C0D73CD108575664 /* SettingsView.swift in Sources */,
+				68DE408DF9E2524ABE6A5AD9 /* SyntaxHighlighter.swift in Sources */,
+				12359D16FAA481F37AEEF8C5 /* TargetObserver.swift in Sources */,
+				C5E64DF8FE991F46E89B3011 /* TargetProfiles.swift in Sources */,
+				49E6134BB92F3BFBF84AADAE /* TargetSnapshot.swift in Sources */,
+				1A22A8265664AE2E5D4F58FA /* ToastView.swift in Sources */,
+				2981BA957C1F7AAA838222DF /* TwoStepClipboard.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6B0695E2F0B2AA1461DDA937 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E58562E83B1A1B1FA5F5E10B /* AppPasteRulesTests.swift in Sources */,
+				AEDF7769FCA98B6D19DAD42F /* AttachmentCounterTests.swift in Sources */,
+				7AA9FA21E246B4F675951004 /* ClipboardRendererTests.swift in Sources */,
+				16932ED44CC744E4FC30EBF6 /* CopyPasteTests.swift in Sources */,
+				53582951E663B5585EB51C85 /* MarkdownCodecTests.swift in Sources */,
+				B039B085DAA1CBCF7E18F1C6 /* MarkdownSyntaxTests.swift in Sources */,
+				6CB3441F77483BC9B3DA751F /* OnePasteControllerTests.swift in Sources */,
+				63D23764D1188A56C025BC89 /* OnePasteMachineTests.swift in Sources */,
+				09E70470BF3682838EF5944E /* RichPasteTests.swift in Sources */,
+				CA67DC80E640BB699734E9E0 /* TestSupport.swift in Sources */,
+				96AF6EF70DF240DAAE65A68C /* TwoStepClipboardTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F444AFDA290F0A4B66B00F72 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47968F6FCA83AD5FAD423056 /* Ferry */;
+			targetProxy = FA9E31E62CA729BB44AFC1EA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		29EAFE7EBF423AB76CF96E47 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ferry.app/Contents/MacOS/Ferry";
+			};
+			name = Release;
+		};
+		49DB9C027C10D48893C7D052 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Ferry/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
+				PRODUCT_NAME = Ferry;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		716C58753081A57E153C2077 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = NO;
+				INFOPLIST_FILE = Ferry/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
+				PRODUCT_NAME = Ferry;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A78BD39E8BCA350CBFA9DC8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ferry.app/Contents/MacOS/Ferry";
+			};
+			name = Debug;
+		};
+		C148553C0E55B6AE5B2360D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Y5HEVNEK2Q;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		C95D99A5D022678A0A3EB891 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Y5HEVNEK2Q;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2B4DCD4B3FA34E4216A42330 /* Build configuration list for PBXProject "Ferry" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C95D99A5D022678A0A3EB891 /* Debug */,
+				C148553C0E55B6AE5B2360D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		69C7A6005D152CC336E8B0BF /* Build configuration list for PBXNativeTarget "Ferry" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				716C58753081A57E153C2077 /* Debug */,
+				49DB9C027C10D48893C7D052 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		889A015112CC79D7774E22C9 /* Build configuration list for PBXNativeTarget "FerryTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A78BD39E8BCA350CBFA9DC8E /* Debug */,
+				29EAFE7EBF423AB76CF96E47 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1090D252864087CBF52BB642 /* Project object */;
+}
