@@ -24,6 +24,7 @@ struct MarkdownEditor: NSViewRepresentable {
             context.coordinator.highlighter.highlightAll(storage)
             storage.delegate = context.coordinator
         }
+        context.coordinator.didLoad(document.markdown, baseDirectory: fileURL?.deletingLastPathComponent())
         let hider = SyntaxHider(textView: textView)
         hider.setEnabled(hideMarkdownSyntax)
         context.coordinator.hider = hider
@@ -38,7 +39,9 @@ struct MarkdownEditor: NSViewRepresentable {
 
     func updateNSView(_ scrollView: NSScrollView, context: Context) {
         context.coordinator.parent = self
-        (scrollView.documentView as? EditorTextView)?.onCopyToast = onCopyToast
+        guard let textView = scrollView.documentView as? EditorTextView else { return }
+        textView.onCopyToast = onCopyToast
+        context.coordinator.syncFromDocument(textView, scrollView: scrollView)
         context.coordinator.hider?.setEnabled(hideMarkdownSyntax)
     }
 
@@ -47,6 +50,10 @@ struct MarkdownEditor: NSViewRepresentable {
         let highlighter = SyntaxHighlighter()
         var hider: SyntaxHider?
         private var pendingHighlight: NSRange?
+        /// What the editor last showed or wrote. The document holding anything else means it changed outside
+        /// the editor: File › Revert To, or the file changed on disk and was reloaded.
+        private var lastSyncedMarkdown = ""
+        private var lastBaseDirectory: URL?
 
         init(_ parent: MarkdownEditor) { self.parent = parent }
 
@@ -59,9 +66,50 @@ struct MarkdownEditor: NSViewRepresentable {
             pendingHighlight = pendingHighlight.map { NSUnionRange($0, editedRange) } ?? editedRange
         }
 
+        func didLoad(_ markdown: String, baseDirectory: URL?) {
+            lastSyncedMarkdown = markdown
+            lastBaseDirectory = baseDirectory
+        }
+
+        /// Shows the document's text when it changed outside the editor, keeping the selection and scroll
+        /// position where they still fit. Also reloads once when an untitled document is first saved, so
+        /// relative image links typed into it show their images.
+        func syncFromDocument(_ textView: EditorTextView, scrollView: NSScrollView) {
+            let markdown = parent.document.markdown
+            let baseDirectory = parent.fileURL?.deletingLastPathComponent()
+            let firstSave = lastBaseDirectory == nil && baseDirectory != nil && markdown.contains("![")
+            guard markdown != lastSyncedMarkdown || firstSave else {
+                lastBaseDirectory = baseDirectory
+                return
+            }
+            guard let storage = textView.textStorage else { return }
+            if textView.hasMarkedText() { // the new text replaces an unfinished input-method composition too
+                textView.inputContext?.discardMarkedText()
+                textView.unmarkText()
+            }
+            let selection = textView.selectedRange()
+            let origin = scrollView.contentView.bounds.origin
+
+            storage.setAttributedString(MarkdownCodec.attributedString(from: markdown, baseDirectory: baseDirectory))
+            pendingHighlight = nil
+            highlighter.highlightAll(storage)
+            let location = min(selection.location, storage.length)
+            textView.setSelectedRange(NSRange(location: location, length: min(selection.length, storage.length - location)))
+            hider?.refreshAll()
+            textView.layoutManager?.ensureLayout(for: textView.textContainer!)
+            let maxY = max(0, textView.frame.height - scrollView.contentView.bounds.height)
+            scrollView.contentView.scroll(to: NSPoint(x: origin.x, y: min(origin.y, maxY)))
+            scrollView.reflectScrolledClipView(scrollView.contentView)
+            // Undo steps refer to the old text; replaying them on the new one would garble it.
+            parent.undoManager?.removeAllActions()
+            didLoad(markdown, baseDirectory: baseDirectory)
+        }
+
         func textDidChange(_ notification: Notification) {
             guard let textView = notification.object as? EditorTextView else { return }
-            parent.document.markdown = textView.markdown
+            let markdown = textView.markdown
+            parent.document.markdown = markdown
+            lastSyncedMarkdown = markdown
             // Never restyle while an input method is composing (Chinese/Japanese IME).
             guard !textView.hasMarkedText(), let range = pendingHighlight, let storage = textView.textStorage else { return }
             pendingHighlight = nil

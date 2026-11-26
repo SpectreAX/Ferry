@@ -13,6 +13,9 @@ final class OnePasteController {
     var guardTimeouts: [Phase: TimeInterval] = [.imagesOffered: 2, .imagesRequested: 5, .textOffered: 2, .textRequested: 4]
     /// How long the target may take to answer a before-snapshot. Past it: hand ⌘V back (before image 1) or stop.
     var baselineTimeout: TimeInterval = 1.5
+    /// Terminals: how long after the terminal read a value Ferry moves on. Keystrokes reach the CLI in order
+    /// through the terminal, so this only lets the terminal finish its paste before the clipboard changes.
+    var terminalSettleDelay: TimeInterval = 0.15
     /// Backstop checks while waiting for confirmation, in case the app sends no change notification.
     var recheckDelays: [TimeInterval] = [0.05, 0.1, 0.2, 0.3, 0.5, 0.8, 1.2, 1.6]
 
@@ -46,6 +49,9 @@ final class OnePasteController {
     private var observing = false
     private var sessionStart = Date()
     private var settingsToken: NSObjectProtocol?
+    /// The session's target is a terminal (see `TargetProfiles.terminals`).
+    private var inTerminal = false
+    private var settleWork: DispatchWorkItem?
 
     /// What the keyboard tap may read, from its own thread.
     private struct Gate {
@@ -164,9 +170,10 @@ final class OnePasteController {
             return
         }
         target = (pid, name, bundleID)
+        inTerminal = TargetProfiles.isTerminal(bundleID)
         sessionStart = Date()
         lastSummary = ""
-        log("session in \(name) (pid \(pid))")
+        log("session in \(name) (pid \(pid))\(inTerminal ? ", terminal: images as file paths" : "")")
         apply(machine.handle(.pasteIntercepted))
     }
 
@@ -197,6 +204,7 @@ final class OnePasteController {
         if !phase.isActive {
             baselineWatchdog?.cancel()
             baselineGeneration += 1
+            settleWork?.cancel()
             guardWork?.cancel()
             recheckWork?.cancel()
             if observing { env.endObserving(); observing = false }
@@ -216,7 +224,8 @@ final class OnePasteController {
         case .writeText: writeText()
         case .postPaste: postPaste()
         case .startGuard(let phase): startGuard(phase)
-        case .evaluateTarget: evaluate(); scheduleRecheck(0)
+        case .evaluateTarget:
+            if inTerminal { settle() } else { evaluate(); scheduleRecheck(0) }
         case .restoreFallback: writeFallback()
         case .leaveTextOnClipboard: writeManualText()
         case .notify(let message): env.notify(message)
@@ -228,12 +237,15 @@ final class OnePasteController {
     // MARK: Clipboard
 
     /// One image per paste (see `OnePasteMachine`).
+    /// In a terminal the image goes as its escaped file path (plain text), which the AI CLI attaches.
     private func writeImage(_ index: Int) {
         guard let payload, payload.images.indices.contains(index) else { return }
-        let provider = LazyPasteboardValue(payload.images[index].absoluteString) { [weak self] in self?.send(.imageRequested(index)) }
+        let url = payload.images[index]
+        let value = inTerminal ? TerminalPath.escaped(url.path) : url.absoluteString
+        let provider = LazyPasteboardValue(value) { [weak self] in self?.send(.imageRequested(index)) }
         providers = [provider]
         let item = NSPasteboardItem()
-        item.setDataProvider(provider, forTypes: [.fileURL])
+        item.setDataProvider(provider, forTypes: [inTerminal ? .string : .fileURL])
         markSkippable(item)
         if let fragment = payload.fragment { item.setData(fragment, forType: FerryPasteboard.fragmentType) }
         write([item], hostOnly: true)
@@ -322,8 +334,11 @@ final class OnePasteController {
             if self.machine.nothingPastedYet { self.attachments = snapshot.map { AttachmentCounter(start: $0) } }
             self.log("baseline \(snapshot?.summary ?? "unavailable") focus=\(snapshot?.focusedRole ?? "?")/\(snapshot?.focusedSubrole ?? "-")")
             // Only multi-line message boxes get One ⌘V; anything else (or a field Ferry can't read) gets the
-            // normal paste, before anything has been written to the clipboard.
-            if self.machine.nothingPastedYet, let reason = snapshot.map({ $0.unsuitableReason }) ?? "can't read the focused field" {
+            // normal paste, before anything has been written to the clipboard. Many terminals expose nothing
+            // to Accessibility; there an unreadable target is expected, while a search or password field still
+            // gets the normal paste.
+            let unreadable: String? = self.inTerminal ? nil : "can't read the focused field"
+            if self.machine.nothingPastedYet, let reason = snapshot.map({ $0.unsuitableReason }) ?? unreadable {
                 return self.send(.unsuitableTarget(reason))
             }
             self.apply(rest)
@@ -373,6 +388,20 @@ final class OnePasteController {
             log("\(trigger): \(now.summary) images=\(imagesAdded) text=\(textAdded)")
         }
         send(.targetUpdated(imagesAdded: imagesAdded, textAdded: textAdded))
+    }
+
+    /// Terminals show attachments as text in a character grid, often invisible to Accessibility. The value having
+    /// been read is the evidence: once the terminal has read it, it is in the CLI's input, in order.
+    private func settle() {
+        settleWork?.cancel()
+        let waiting = phase
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.phase == waiting else { return }
+            self.log("terminal read it; moving on")
+            self.send(.targetUpdated(imagesAdded: waiting == .imagesRequested, textAdded: waiting == .textRequested))
+        }
+        settleWork = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + terminalSettleDelay, execute: work)
     }
 
     private func scheduleRecheck(_ step: Int) {

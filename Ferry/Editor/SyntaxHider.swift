@@ -23,6 +23,13 @@ final class SyntaxHider: NSObject, NSLayoutManagerDelegate {
         refresh(NSRange(location: 0, length: storage.length))
     }
 
+    /// After the whole text was replaced (a reload): recompute the revealed paragraph and redo every glyph.
+    func refreshAll() {
+        guard isEnabled, let storage = textView?.textStorage else { return }
+        revealed = caretParagraph()
+        refresh(NSRange(location: 0, length: storage.length))
+    }
+
     /// Call when the selection changed, and after an edit was restyled.
     func update() {
         guard isEnabled, let textView, !textView.hasMarkedText(), textView.selectedRange().length == 0 else { return }

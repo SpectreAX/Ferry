@@ -1,4 +1,5 @@
 import AppKit
+import QuickLookUI
 
 /// The Markdown editor view (TextKit 1). ⌘C/⌘X are "Copy for AI"; paste/drop import images into `assets/`.
 final class EditorTextView: NSTextView {
@@ -275,6 +276,88 @@ final class EditorTextView: NSTextView {
         if didSave, let url = document.fileURL { action?(url) }
     }
 
+    // MARK: Images: Quick Look and context menu
+
+    /// The image under a point in view coordinates: on the picture itself, not beside it at the end of the line.
+    func imageAttachment(at point: NSPoint) -> (attachment: ImageAttachment, characterIndex: Int)? {
+        guard let layoutManager, let textContainer, let storage = textStorage, storage.length > 0 else { return nil }
+        let inContainer = NSPoint(x: point.x - textContainerOrigin.x, y: point.y - textContainerOrigin.y)
+        let glyph = layoutManager.glyphIndex(for: inContainer, in: textContainer)
+        guard layoutManager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: textContainer).contains(inContainer)
+        else { return nil }
+        let index = layoutManager.characterIndexForGlyph(at: glyph)
+        guard index < storage.length, let image = storage.attribute(.attachment, at: index, effectiveRange: nil) as? ImageAttachment,
+              FileManager.default.fileExists(atPath: image.fileURL.path) else { return nil }
+        return (image, index)
+    }
+
+    /// Double-clicking an image opens it in Quick Look.
+    override func mouseDown(with event: NSEvent) {
+        if event.clickCount == 2, let hit = imageAttachment(at: convert(event.locationInWindow, from: nil)) {
+            setSelectedRange(NSRange(location: hit.characterIndex, length: 1))
+            showQuickLook(hit.attachment.fileURL)
+            return
+        }
+        super.mouseDown(with: event)
+    }
+
+    /// Right-clicking an image adds Quick Look, Reveal in Finder and Open Image above the usual items.
+    override func menu(for event: NSEvent) -> NSMenu? {
+        let menu = super.menu(for: event) ?? NSMenu()
+        guard let hit = imageAttachment(at: convert(event.locationInWindow, from: nil)) else { return menu }
+        let items = [
+            NSMenuItem(title: "Quick Look", action: #selector(quickLookImage(_:)), keyEquivalent: ""),
+            NSMenuItem(title: "Reveal in Finder", action: #selector(revealImage(_:)), keyEquivalent: ""),
+            NSMenuItem(title: "Open Image", action: #selector(openImage(_:)), keyEquivalent: ""),
+            NSMenuItem.separator(),
+        ]
+        for (offset, item) in items.enumerated() {
+            item.target = self
+            item.representedObject = hit.attachment.fileURL
+            menu.insertItem(item, at: offset)
+        }
+        return menu
+    }
+
+    @objc private func quickLookImage(_ sender: NSMenuItem) {
+        (sender.representedObject as? URL).map(showQuickLook)
+    }
+
+    @objc private func revealImage(_ sender: NSMenuItem) {
+        guard let url = sender.representedObject as? URL else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([url])
+    }
+
+    @objc private func openImage(_ sender: NSMenuItem) {
+        guard let url = sender.representedObject as? URL else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    private var quickLookURL: URL?
+
+    private func showQuickLook(_ url: URL) {
+        quickLookURL = url
+        guard let panel = QLPreviewPanel.shared() else { return }
+        if panel.isVisible, panel.dataSource === self {
+            panel.reloadData()
+        } else {
+            panel.makeKeyAndOrderFront(nil)
+        }
+    }
+
+    override func acceptsPreviewPanelControl(_ panel: QLPreviewPanel!) -> Bool { quickLookURL != nil }
+
+    override func beginPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        panel.dataSource = self
+        panel.delegate = self
+    }
+
+    override func endPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        panel.dataSource = nil
+        panel.delegate = nil
+        quickLookURL = nil
+    }
+
     // MARK: Drag and drop, services
 
     override var readablePasteboardTypes: [NSPasteboard.PasteboardType] {
@@ -295,5 +378,27 @@ final class EditorTextView: NSTextView {
         guard let fragment = selectedFragment() else { return false }
         FerryPasteboard.writeForAI(fragment, to: pboard, attachFiles: false, stripMarkdown: stripMarkdownOnCopy())
         return true
+    }
+}
+
+extension EditorTextView: QLPreviewPanelDataSource, QLPreviewPanelDelegate {
+    func numberOfPreviewItems(in panel: QLPreviewPanel!) -> Int { quickLookURL == nil ? 0 : 1 }
+
+    func previewPanel(_ panel: QLPreviewPanel!, previewItemAt index: Int) -> QLPreviewItem! { quickLookURL as NSURL? }
+
+    /// Zooms from the image in the text.
+    func previewPanel(_ panel: QLPreviewPanel!, sourceFrameOnScreenFor item: QLPreviewItem!) -> NSRect {
+        guard let url = quickLookURL, let storage = textStorage, let layoutManager, let textContainer, let window else { return .zero }
+        var frame = NSRect.zero
+        storage.enumerateAttribute(.attachment, in: NSRange(location: 0, length: storage.length)) { value, range, stop in
+            guard (value as? ImageAttachment)?.fileURL == url else { return }
+            var rect = layoutManager.boundingRect(forGlyphRange: layoutManager.glyphRange(forCharacterRange: range, actualCharacterRange: nil),
+                                                  in: textContainer)
+            rect.origin.x += textContainerOrigin.x
+            rect.origin.y += textContainerOrigin.y
+            frame = window.convertToScreen(convert(rect, to: nil))
+            stop.pointee = true
+        }
+        return frame
     }
 }

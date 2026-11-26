@@ -4,7 +4,7 @@ A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextK
 
 ## Features
 
-- **Inline Images & Lossless Markdown**: Renders local images inline with `ImageAttachment` while preserving original Markdown syntax on save (`MarkdownCodec`), and stores imported images in a document-adjacent `assets/` folder (`AssetStore`).
+- **Inline Images & Lossless Markdown**: Renders local images inline with `ImageAttachment` while preserving original Markdown syntax on save (`MarkdownCodec`), and stores imported images in a document-adjacent `assets/` folder (`AssetStore`). Double-click any inline image to preview it with Quick Look, or right-click for **Quick Look**, **Reveal in Finder**, and **Open Image**.
 - **Live Syntax Highlighting**: Incremental CommonMark + GFM styling (`SyntaxHighlighter`) that never alters text and avoids restyling during IME composition, paired with Return list/task/quote continuation (`ListContinuation`).
 - **Hide Markdown Syntax (`⌥⌘/`)**: Toggle hiding Markdown syntax symbols in the editor (`View` menu or `Ferry › Settings`), revealing the active cursor paragraph automatically without changing document text (`SyntaxHider`). Shortcut customizable in Settings.
 - **Ignore Markdown Syntax When Copying (`⌥⇧⌘C`)**: Optional toggle (`Edit` menu or `Ferry › Settings`) to strip Markdown syntax for external apps (`MarkdownStripper`) while keeping lossless Markdown when pasting back into Ferry and via `⌥⌘C`. Shortcut customizable in Settings.
@@ -12,7 +12,7 @@ A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextK
 - **Three Copy Modes for Mixed Selections** (`Ferry › Settings`):
   - **Paste twice** *(default)*: Offers image files lazily on the first paste, then swaps the clipboard to text with `[Image N]` placeholders for the second paste (`TwoStepClipboard`).
   - **Paste once (.md + images)**: Attaches text as a `.md` file alongside image files for Chromium/Electron apps that ignore clipboard text when files are present (`FerryPasteboard` + `ClipboardAttachments`).
-  - **One ⌘V (experimental)**: Uses Accessibility (`CGEventTap` + background `AXUIElement` observation) to paste images one at a time, confirm each in the target UI, and then paste the text — never presses Return, never drops content, and learns per-app behavior (`AppPasteRules`).
+  - **One ⌘V**: Uses Accessibility (`CGEventTap` + background `AXUIElement` observation) to paste images one at a time, confirm each in the target UI, and then paste the text — never presses Return, never drops content, and learns per-app behavior (`AppPasteRules`). Also supports terminals (Terminal, iTerm2, Ghostty, Warp, WezTerm, Alacritty, Kitty, Hyper, Rio) by pasting each image as a shell-escaped file path for CLI AI tools (Codex CLI, Claude Code) followed by the text.
 - **Plain Markdown Copy**: `⌥⌘C` copies plain relative-path Markdown directly to the clipboard.
 
 ## Project Structure

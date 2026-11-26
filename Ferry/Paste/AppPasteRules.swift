@@ -59,7 +59,10 @@ final class AppPasteRules {
 
     /// Learns from a finished session. A success re-enables One ⌘V; repeated failures switch to a normal paste.
     func record(_ outcome: Outcome, for bundleID: String, name: String) {
-        guard !TargetProfiles.isExcluded(bundleID), !(outcome == .failed && Self.browsers.contains(bundleID)) else { return }
+        // Tabs in browsers and terminals each hold something different (a site; a shell or an AI CLI), so one
+        // tab's failure says nothing about the others: there Ferry learns from successes only.
+        let learnsOnlySuccess = Self.browsers.contains(bundleID) || TargetProfiles.isTerminal(bundleID)
+        guard !TargetProfiles.isExcluded(bundleID), !(outcome == .failed && learnsOnlySuccess) else { return }
         update { rules in
             var rule = rules[bundleID] ?? Rule(name: Self.presets[bundleID] ?? name, mode: .oneCommandV, setByUser: false, failures: 0)
             guard !rule.setByUser else { return }

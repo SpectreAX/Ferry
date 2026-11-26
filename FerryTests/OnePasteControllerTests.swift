@@ -306,11 +306,54 @@ final class OnePasteControllerTests: XCTestCase {
         XCTAssertTrue(env.interceptionActive)
     }
 
+    // MARK: Terminals
+
+    private func inTerminal() {
+        controller.terminalSettleDelay = 0.05
+        controller.frontmostChanged(bundleID: "com.mitchellh.ghostty", pid: 4242)
+    }
+
+    func testTerminalGetsEachImageAsItsPathThenTheText() {
+        env.unreadable = true // GPU terminals expose nothing to Accessibility
+        let payload = payload()
+        arm(payload)
+        inTerminal()
+        XCTAssertEqual(controller.decide(commandV), .swallow)
+        XCTAssertTrue(waitUntil { env.pastes == 3 && controller.phase == .armed })
+        XCTAssertTrue(env.target.receivedFiles.isEmpty, "never files: a CLI reads text")
+        XCTAssertEqual(env.target.receivedTexts, images.map { TerminalPath.escaped($0.path) } + [payload.text])
+        XCTAssertEqual(env.pasteboard.string(forType: .string), "FALLBACK", "the copy is back for the next ⌘V")
+        XCTAssertEqual(rules.all.first?.rule.mode, .oneCommandV)
+    }
+
+    func testTerminalSearchFieldGetsANormalPaste() {
+        env.target.role = "AXTextField"
+        env.target.subrole = "AXSearchField"
+        arm(payload())
+        inTerminal()
+        controller.decide(commandV)
+        XCTAssertTrue(waitUntil { env.pastes == 1 && controller.phase == .armed && env.target.receivedTexts == ["FALLBACK"] })
+    }
+
+    func testInterruptingATerminalSessionSendsNothingMore() {
+        env.unreadable = true
+        arm(payload())
+        inTerminal()
+        controller.terminalSettleDelay = 0.4
+        controller.decide(commandV)
+        XCTAssertTrue(waitUntil { controller.phase == .imagesRequested })
+        XCTAssertEqual(controller.decide(.init(isCommandV: false, isAutorepeat: false, isEscape: true)), .swallow)
+        XCTAssertTrue(waitUntil { controller.phase == .idle })
+        RunLoop.main.run(until: Date().addingTimeInterval(0.6))
+        XCTAssertEqual(env.pastes, 1, "the pending step was dropped")
+        XCTAssertTrue(rules.all.isEmpty)
+    }
+
     // MARK: Where ⌘V is left alone
 
     func testOtherAppsAndKeysPassThrough() {
         arm(payload())
-        controller.frontmostChanged(bundleID: "com.apple.Terminal", pid: 777)
+        controller.frontmostChanged(bundleID: "com.apple.finder", pid: 777)
         XCTAssertEqual(controller.decide(commandV), .pass)
         controller.frontmostChanged(bundleID: "dev.spectreax.ferry", pid: ProcessInfo.processInfo.processIdentifier)
         XCTAssertEqual(controller.decide(commandV), .pass)
@@ -446,7 +489,7 @@ final class OnePasteControllerTests: XCTestCase {
 
     func testExcludedAppsAlwaysGetANormalPaste() {
         arm(payload())
-        for bundleID in ["com.apple.Terminal", "com.mitchellh.ghostty", "com.apple.finder", "com.1password.1password"] {
+        for bundleID in ["com.apple.finder", "com.1password.1password", "com.apple.SecurityAgent", "dev.spectreax.ferry"] {
             controller.frontmostChanged(bundleID: bundleID, pid: 6000)
             XCTAssertEqual(controller.decide(commandV), .pass, bundleID)
         }
