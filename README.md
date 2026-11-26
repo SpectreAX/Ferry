@@ -4,7 +4,7 @@ A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextK
 
 ## Features
 
-- **Inline Images & Lossless Markdown**: Renders local images inline with `ImageAttachment` while preserving original Markdown syntax on save (`MarkdownCodec`), and stores imported images in a document-adjacent `assets/` folder (`AssetStore`). Double-click any inline image to preview it with Quick Look, or right-click for **Quick Look**, **Reveal in Finder**, and **Open Image**.
+- **Inline Images & Lossless Markdown**: Renders local images inline with `ImageAttachment` while preserving original Markdown syntax on save (`MarkdownCodec`), and stores imported images in a document-adjacent `assets/` folder (`AssetStore`). Resize inline images via the bottom-right drag handle (with live width indicator) or right-click **Size** (`25%`, `50%`, `75%`, `Fit Width`) — custom widths save as `<img src="..." width="...">` and revert to `![alt](path)` on **Fit Width**, with lossless round-tripping for existing `<img>` tags. Right-click also provides **Quick Look** (or double-click), **Reveal in Finder**, **Open Image**, and pixel-exact **Flip Horizontal** / **Flip Vertical** / **Rotate Left 90°** / **Rotate Right 90°** (`ImageTransform`, saving a new PNG into `assets/` without modifying the original file while preserving EXIF orientation and Retina DPI).
 - **Live Syntax Highlighting**: Incremental CommonMark + GFM styling (`SyntaxHighlighter`) that never alters text and avoids restyling during IME composition, paired with Return list/task/quote continuation (`ListContinuation`).
 - **Editing Ergonomics**: Opens documents with the editor focused; supports `⌘`-clicking links (`http`, `https`, `mailto`) or right-clicking for **Open Link** / **Copy Link** (even when syntax is hidden), clicking `[ ]`/`[x]` task checkboxes to toggle completion, `Tab`/`⇧Tab` list & multi-line indentation (preserving inline images), `⌘B`/`⌘I`/`⌘K` Markdown formatting, smart link paste (pasting an `http(s)` URL over selected text creates `[text](url)`), and `⌘=`/`⌘-`/`⌘0` text size zoom.
 - **Hide Markdown Syntax (`⌥⌘/`)**: Toggle hiding Markdown syntax symbols in the editor (`View` menu or `Ferry › Settings`), revealing the active cursor paragraph automatically without changing document text (`SyntaxHider`). Shortcut customizable in Settings.
@@ -20,7 +20,7 @@ A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextK
 
 - `Ferry/App`: App entry point, `ReferenceFileDocument`, main editor window, toast, and settings UI.
 - `Ferry/Editor`: TextKit 1 editor (`EditorTextView`), SwiftUI wrapper (`MarkdownEditor`), inline image attachment cell, and syntax highlighter.
-- `Ferry/Model`: Markdown codec, asset store, pasteboard read/write, rich clipboard reader, remote image loader, list continuation, and two-step clipboard.
+- `Ferry/Model`: Markdown codec, asset store, image transforms, pasteboard read/write, rich clipboard reader, remote image loader, list continuation, and two-step clipboard.
 - `Ferry/Paste`: One ⌘V state machine (`OnePasteMachine`), controller, event tap, keystroke poster, AX observer/snapshot, attachment counter, and per-app rules.
 - `FerryTests`: Unit tests covering Markdown syntax/codec, rich paste, copy/paste, two-step clipboard, app rules, attachment counting, and the One ⌘V state machine/controller.
 - `design/`: App icon SVG masters, Icon Composer layers, and PNG previews.

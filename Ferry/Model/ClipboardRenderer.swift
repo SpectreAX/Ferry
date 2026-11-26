@@ -29,7 +29,8 @@ enum ClipboardRenderer {
         var html = #"<meta charset="utf-8">"#
         for segment in fragment.segments {
             if let image = segment.image {
-                html += #"<img src="\#(escape(fileURLString(image.path)))" alt="\#(escape(image.alt))">"#
+                let width = image.displayWidth.map { #" width="\#(Int($0.rounded()))""# } ?? ""
+                html += #"<img src="\#(escape(fileURLString(image.path)))" alt="\#(escape(image.alt))"\#(width)>"#
             } else if let text = segment.text {
                 html += escape(text)
                     .replacingOccurrences(of: "\r\n", with: "\n")

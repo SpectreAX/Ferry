@@ -6,6 +6,8 @@ struct Fragment: Codable, Equatable {
     struct Image: Codable, Equatable {
         var path: String
         var alt: String
+        /// A width chosen in Ferry (points); kept when pasting back into Ferry. Absent in older fragments.
+        var displayWidth: CGFloat? = nil
     }
 
     /// Exactly one of `text` / `image` is set.
@@ -32,7 +34,7 @@ struct Fragment: Codable, Equatable {
         attributedString.enumerateAttribute(.attachment, in: NSRange(location: 0, length: attributedString.length)) { value, range, _ in
             if let image = value as? ImageAttachment {
                 for _ in 0..<range.length {
-                    segments.append(Segment(image: Image(path: image.fileURL.path, alt: image.alt)))
+                    segments.append(Segment(image: Image(path: image.fileURL.path, alt: image.alt, displayWidth: image.displayWidth)))
                 }
             } else if value == nil {
                 let text = string.substring(with: range)

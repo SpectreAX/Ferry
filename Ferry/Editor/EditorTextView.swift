@@ -452,10 +452,12 @@ final class EditorTextView: NSTextView {
 
     private static let clickModifiers: NSEvent.ModifierFlags = [.command, .option, .control, .shift]
 
-    /// Double-click an image: Quick Look. ⌘-click a link: open it. Click a task box: check or uncheck it.
+    /// Drag an image's resize handle: resize it. Double-click an image: Quick Look. ⌘-click a link: open it.
+    /// Click a task box: check or uncheck it.
     override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
         let modifiers = event.modifierFlags.intersection(Self.clickModifiers)
+        if event.clickCount == 1, modifiers.isEmpty, !hasMarkedText(), beginImageResize(at: point) { return }
         if event.clickCount == 2, let hit = imageAttachment(at: point) {
             setSelectedRange(NSRange(location: hit.characterIndex, length: 1))
             showQuickLook(hit.attachment.fileURL)
@@ -513,39 +515,256 @@ final class EditorTextView: NSTextView {
         let point = convert(window.mouseLocationOutsideOfEventStream, from: nil)
         guard bounds.contains(point) else { return }
         let modifiers = flags.intersection(Self.clickModifiers)
+        if resizeSession != nil || modifiers.isEmpty && resizeHandleHit(at: point) != nil { return NSCursor.resizeLeftRight.set() }
         let clickable = modifiers == .command && linkURL(at: point) != nil || modifiers.isEmpty && taskCheckboxRange(at: point) != nil
         (clickable ? NSCursor.pointingHand : NSCursor.iBeam).set()
     }
 
-    /// Right-clicking an image adds Quick Look, Reveal in Finder and Open Image above the usual items; a link adds
-    /// Open Link and Copy Link.
+    /// The image a context-menu item acts on: this one, even when the same file appears more than once.
+    final class ImageMenuTarget: NSObject {
+        let characterIndex: Int
+        let attachment: ImageAttachment
+        let size: CGFloat?
+        let operation: ImageTransform.Operation?
+        init(_ characterIndex: Int, _ attachment: ImageAttachment, size: CGFloat? = nil, operation: ImageTransform.Operation? = nil) {
+            self.characterIndex = characterIndex
+            self.attachment = attachment
+            self.size = size
+            self.operation = operation
+        }
+    }
+
+    /// Right-clicking an image adds Quick Look, Reveal in Finder, Open Image, Size, flips and quarter turns above
+    /// the usual items; a link adds Open Link and Copy Link.
     override func menu(for event: NSEvent) -> NSMenu? {
         let menu = super.menu(for: event) ?? NSMenu()
         let point = convert(event.locationInWindow, from: nil)
-        let items: [NSMenuItem]
-        let object: URL
+        var items: [NSMenuItem] = []
+        func add(_ title: String, _ action: Selector, _ object: Any) {
+            let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
+            item.target = self
+            item.representedObject = object
+            items.append(item)
+        }
         if let hit = imageAttachment(at: point) {
-            object = hit.attachment.fileURL
-            items = [
-                NSMenuItem(title: "Quick Look", action: #selector(quickLookImage(_:)), keyEquivalent: ""),
-                NSMenuItem(title: "Reveal in Finder", action: #selector(revealImage(_:)), keyEquivalent: ""),
-                NSMenuItem(title: "Open Image", action: #selector(openImage(_:)), keyEquivalent: ""),
-            ]
+            let url = hit.attachment.fileURL
+            add("Quick Look", #selector(quickLookImage(_:)), url)
+            add("Reveal in Finder", #selector(revealImage(_:)), url)
+            add("Open Image", #selector(openImage(_:)), url)
+            items.append(.separator())
+            let size = NSMenuItem(title: "Size", action: nil, keyEquivalent: "")
+            size.submenu = sizeMenu(for: hit.characterIndex, hit.attachment)
+            items.append(size)
+            for operation in ImageTransform.Operation.allCases {
+                add(operation.name, #selector(transformImageFromMenu(_:)), ImageMenuTarget(hit.characterIndex, hit.attachment, operation: operation))
+            }
         } else if let url = linkURL(at: point) {
-            object = url
-            items = [
-                NSMenuItem(title: "Open Link", action: #selector(openLink(_:)), keyEquivalent: ""),
-                NSMenuItem(title: "Copy Link", action: #selector(copyLink(_:)), keyEquivalent: ""),
-            ]
+            add("Open Link", #selector(openLink(_:)), url)
+            add("Copy Link", #selector(copyLink(_:)), url)
         } else {
             return menu
         }
-        for (offset, item) in (items + [.separator()]).enumerated() {
-            item.target = self
-            item.representedObject = object
-            menu.insertItem(item, at: offset)
-        }
+        for (offset, item) in (items + [.separator()]).enumerated() { menu.insertItem(item, at: offset) }
         return menu
+    }
+
+    /// 25 %, 50 %, 75 % of the text width, and Fit Width (the image's own size, never wider than the text).
+    private func sizeMenu(for index: Int, _ attachment: ImageAttachment) -> NSMenu {
+        let menu = NSMenu()
+        let available = textContainer.map(ImageAttachmentCell.availableWidth(in:)) ?? 600
+        for percent in [25, 50, 75] {
+            let width = floor(available * CGFloat(percent) / 100)
+            let item = NSMenuItem(title: "\(percent)%", action: #selector(resizeImageFromMenu(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = ImageMenuTarget(index, attachment, size: width)
+            item.state = attachment.displayWidth.map { abs($0 - width) < 1 } ?? false ? .on : .off
+            menu.addItem(item)
+        }
+        let fit = NSMenuItem(title: "Fit Width", action: #selector(resizeImageFromMenu(_:)), keyEquivalent: "")
+        fit.target = self
+        fit.representedObject = ImageMenuTarget(index, attachment)
+        fit.state = attachment.displayWidth == nil ? .on : .off
+        menu.addItem(fit)
+        return menu
+    }
+
+    @objc private func resizeImageFromMenu(_ sender: NSMenuItem) {
+        guard let target = sender.representedObject as? ImageMenuTarget, isStill(target) else { return }
+        resizeImage(at: target.characterIndex, width: target.size)
+    }
+
+    @objc private func transformImageFromMenu(_ sender: NSMenuItem) {
+        guard let target = sender.representedObject as? ImageMenuTarget, let operation = target.operation, isStill(target) else { return }
+        transformImage(at: target.characterIndex, operation: operation)
+    }
+
+    /// The menu's image is still where it was (nothing was edited while the menu was open).
+    private func isStill(_ target: ImageMenuTarget) -> Bool {
+        imageAttachment(atCharacter: target.characterIndex) === target.attachment
+    }
+
+    private func imageAttachment(atCharacter index: Int) -> ImageAttachment? {
+        guard let storage = textStorage, index >= 0, index < storage.length else { return nil }
+        return storage.attribute(.attachment, at: index, effectiveRange: nil) as? ImageAttachment
+    }
+
+    // MARK: Image size and orientation
+
+    /// Shows the image at `width` points (nil: its own size, fitted to the text). The file is untouched; saved as
+    /// `<img … width="…">` or, without a width, `![alt](path)`. One undo step; the image stays selected.
+    func resizeImage(at index: Int, width: CGFloat?) {
+        guard let old = imageAttachment(atCharacter: index),
+              let new = ImageAttachment(fileURL: old.fileURL, alt: old.alt, displayWidth: width.map { $0.rounded() }) else { return }
+        replaceImage(at: index, with: new, name: width == nil ? "Reset Image Size" : "Resize Image")
+    }
+
+    /// Flips or turns the image's pixels into a new PNG in `assets/` (the original file is kept) and shows that
+    /// instead, keeping its alt text and width. One undo step brings back the original.
+    func transformImage(at index: Int, operation: ImageTransform.Operation) {
+        transformImage(at: index, operation: operation, documentURL: documentURL)
+    }
+
+    private func transformImage(at index: Int, operation: ImageTransform.Operation, documentURL targetURL: URL?) {
+        guard let old = imageAttachment(atCharacter: index) else { return }
+        guard let targetURL else {
+            return saveDocumentFirst { [weak self] savedURL in
+                guard let self, self.imageAttachment(atCharacter: index) === old else { return }
+                self.transformImage(at: index, operation: operation, documentURL: savedURL)
+            }
+        }
+        guard let data = ImageTransform.transform(fileURL: old.fileURL, operation: operation),
+              let url = try? AssetStore.saveImage(data: data, documentURL: targetURL),
+              let new = ImageAttachment(fileURL: url, alt: old.alt, displayWidth: old.displayWidth) else { return NSSound.beep() }
+        replaceImage(at: index, with: new, name: operation.name.replacingOccurrences(of: " 90°", with: ""))
+    }
+
+    private func replaceImage(at index: Int, with image: ImageAttachment, name: String) {
+        replaceMarkdown(NSRange(location: index, length: 1), with: MarkdownCodec.attachmentString(image),
+                        select: NSRange(location: index, length: 1))
+        undoManager?.setActionName(name)
+    }
+
+    // MARK: Resize handle
+
+    private struct ResizeSession {
+        let characterIndex: Int
+        let attachment: ImageAttachment
+        let startX: CGFloat
+        let startWidth: CGFloat
+        var width: CGFloat
+    }
+
+    private var resizeSession: ResizeSession?
+
+    /// Where an image is drawn, in view coordinates.
+    func imageFrame(at index: Int) -> NSRect? {
+        guard imageAttachment(atCharacter: index) != nil, let layoutManager, let textContainer else { return nil }
+        let glyphs = layoutManager.glyphRange(forCharacterRange: NSRange(location: index, length: 1), actualCharacterRange: nil)
+        var rect = layoutManager.boundingRect(forGlyphRange: glyphs, in: textContainer)
+        rect.origin.x += textContainerOrigin.x
+        rect.origin.y += textContainerOrigin.y
+        return rect
+    }
+
+    /// A 14 pt square inset 4 pt from the image's bottom-right corner; none for images smaller than 40 pt.
+    func imageResizeHandleRect(for imageFrame: NSRect) -> NSRect? {
+        guard imageFrame.width >= 40, imageFrame.height >= 40 else { return nil }
+        return NSRect(x: imageFrame.maxX - 18, y: imageFrame.maxY - 18, width: 14, height: 14) // flipped: maxY is the bottom
+    }
+
+    /// The image whose resize handle is under the point.
+    private func resizeHandleHit(at point: NSPoint) -> (index: Int, attachment: ImageAttachment, frame: NSRect)? {
+        guard let hit = imageAttachment(at: point), let frame = imageFrame(at: hit.characterIndex),
+              imageResizeHandleRect(for: frame)?.contains(point) == true else { return nil }
+        return (hit.characterIndex, hit.attachment, frame)
+    }
+
+    private func beginImageResize(at point: NSPoint) -> Bool {
+        guard let hit = resizeHandleHit(at: point) else { return false }
+        setSelectedRange(NSRange(location: hit.index, length: 1))
+        resizeSession = ResizeSession(characterIndex: hit.index, attachment: hit.attachment, startX: point.x,
+                                      startWidth: hit.frame.width, width: hit.frame.width)
+        NSCursor.resizeLeftRight.set()
+        return true
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard var session = resizeSession, let textContainer, let cell = session.attachment.cell else { return super.mouseDragged(with: event) }
+        let x = convert(event.locationInWindow, from: nil).x
+        session.width = floor(min(max(session.startWidth + x - session.startX, cell.minimumWidth),
+                                  ImageAttachmentCell.availableWidth(in: textContainer)))
+        resizeSession = session
+        cell.liveWidth = session.width // display only: the text and the document don't change until the drag ends
+        relayoutImage(at: session.characterIndex)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard let session = resizeSession else { return super.mouseUp(with: event) }
+        resizeSession = nil
+        session.attachment.cell?.liveWidth = nil
+        if abs(session.width - session.startWidth) >= 2 {
+            resizeImage(at: session.characterIndex, width: session.width)
+        } else {
+            relayoutImage(at: session.characterIndex)
+        }
+        needsDisplay = true
+        updateHoverCursor(event.modifierFlags)
+    }
+
+    private func relayoutImage(at index: Int) {
+        guard let layoutManager, let storage = textStorage, index < storage.length else { return }
+        let range = NSRange(location: index, length: 1)
+        layoutManager.invalidateLayout(forCharacterRange: range, actualCharacterRange: nil)
+        layoutManager.invalidateDisplay(forCharacterRange: range)
+        needsDisplay = true
+    }
+
+    /// The resize handle on the selected image; while dragging, an outline and the width in points.
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        let index: Int
+        if let session = resizeSession {
+            index = session.characterIndex
+        } else {
+            let selection = selectedRange()
+            guard selection.length == 1, selectedRanges.count == 1, imageAttachment(atCharacter: selection.location) != nil else { return }
+            index = selection.location
+        }
+        guard let frame = imageFrame(at: index) else { return }
+        if let session = resizeSession {
+            NSColor.controlAccentColor.withAlphaComponent(0.8).setStroke()
+            let outline = NSBezierPath(rect: frame.insetBy(dx: 0.5, dy: 0.5))
+            outline.lineWidth = 1
+            outline.stroke()
+            let label = "\(Int(session.width)) pt" as NSString
+            let attributes: [NSAttributedString.Key: Any] = [.font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .medium),
+                                                             .foregroundColor: NSColor.white]
+            let size = label.size(withAttributes: attributes)
+            let pill = NSRect(x: frame.minX + 6, y: frame.maxY - size.height - 12, width: size.width + 12, height: size.height + 6)
+            if pill.maxX < frame.maxX - 22 {
+                NSColor.black.withAlphaComponent(0.6).setFill()
+                NSBezierPath(roundedRect: pill, xRadius: pill.height / 2, yRadius: pill.height / 2).fill()
+                label.draw(at: NSPoint(x: pill.minX + 6, y: pill.minY + 3), withAttributes: attributes)
+            }
+        }
+        guard let handle = imageResizeHandleRect(for: frame) else { return }
+        NSColor.black.withAlphaComponent(0.45).setFill()
+        NSBezierPath(roundedRect: handle, xRadius: 3, yRadius: 3).fill()
+        NSColor.white.withAlphaComponent(0.9).setStroke()
+        let grip = NSBezierPath() // two diagonal strokes
+        grip.lineWidth = 1.2
+        grip.move(to: NSPoint(x: handle.maxX - 3, y: handle.minY + 5)); grip.line(to: NSPoint(x: handle.minX + 5, y: handle.maxY - 3))
+        grip.move(to: NSPoint(x: handle.maxX - 3, y: handle.minY + 9)); grip.line(to: NSPoint(x: handle.minX + 9, y: handle.maxY - 3))
+        grip.stroke()
+    }
+
+    /// The handle appears and disappears with the selection.
+    override func setSelectedRanges(_ ranges: [NSValue], affinity: NSSelectionAffinity, stillSelecting: Bool) {
+        let before = selectedRange()
+        super.setSelectedRanges(ranges, affinity: affinity, stillSelecting: stillSelecting)
+        for range in [before, selectedRange()] where range.length == 1 {
+            if let frame = imageFrame(at: range.location) { setNeedsDisplay(frame.insetBy(dx: -2, dy: -2)) }
+        }
     }
 
     @objc private func openLink(_ sender: NSMenuItem) {

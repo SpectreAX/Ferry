@@ -19,7 +19,11 @@ func writePNG(at url: URL, size: Int = 8) throws -> URL {
     let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size, bitsPerSample: 8,
                                samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
                                colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
-    for x in 0..<size { for y in 0..<size { rep.setColor(.systemTeal, atX: x, y: y) } }
+    NSGraphicsContext.saveGraphicsState()
+    defer { NSGraphicsContext.restoreGraphicsState() }
+    NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: rep)
+    NSColor(deviceRed: 0.2, green: 0.6, blue: 0.7, alpha: 1).setFill()
+    NSRect(x: 0, y: 0, width: size, height: size).fill()
     try rep.representation(using: .png, properties: [:])!.write(to: url)
     return url
 }

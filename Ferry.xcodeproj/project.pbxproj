@@ -14,6 +14,7 @@
 		13AD54D375AD438FFA8EDB9B /* MarkdownCodec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7151B13D09E90392EE76B847 /* MarkdownCodec.swift */; };
 		16932ED44CC744E4FC30EBF6 /* CopyPasteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */; };
 		1A22A8265664AE2E5D4F58FA /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06069725BC2B5F43B304466F /* ToastView.swift */; };
+		1C198C4323170D1274957B65 /* ImageTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D4BA4F3B83A4B6E3AF18AB /* ImageTransform.swift */; };
 		22C9E66EE187D7D7753A1BB5 /* OnePasteEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */; };
 		271150B0C0D73CD108575664 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A2CAA5DADFF35F62C82100 /* SettingsView.swift */; };
 		291CE7DA310C6EC30AC30DD8 /* PasteEventTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */; };
@@ -37,6 +38,7 @@
 		83AA3208EB83A273FE8D728D /* ClipboardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB783964811F20202D9D007 /* ClipboardRenderer.swift */; };
 		843AFB8AC5474ECB0798E7BD /* OnePasteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A821A8AAF317AD8A4FF5F0B9 /* OnePasteController.swift */; };
 		8948C297B1F9797D7E098DE3 /* PasteLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D4AF5D80BB35C542E626CE /* PasteLog.swift */; };
+		8CBB6B4BFE04781A54C191EF /* ImageSizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 701C5BEB4351AD022EE97697 /* ImageSizeTests.swift */; };
 		90689B7B8190911054D5BBE5 /* AppPasteRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21173FB22033ABD0D8F5E5BE /* AppPasteRules.swift */; };
 		94E62F75EC1FD572B7D90D12 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 246213B0C38BCE420A8D6698 /* ContentView.swift */; };
 		96AF6EF70DF240DAAE65A68C /* TwoStepClipboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54999AE6576EA8564DA68374 /* TwoStepClipboardTests.swift */; };
@@ -58,6 +60,7 @@
 		CFC0D71D22C464E6F1B2E329 /* MarkdownFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */; };
 		E3810F28265F92ED41D30233 /* OnePasteMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */; };
 		E58562E83B1A1B1FA5F5E10B /* AppPasteRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */; };
+		E6E0D55891AC2F7ABA510A1E /* ImageTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E49027E105872FAD1425493 /* ImageTransformTests.swift */; };
 		EA0F1A8EE3BC076D28E439FC /* AppShortcutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF768B8A8E18FE50868D6724 /* AppShortcutTests.swift */; };
 		EC53CE93EC811FB21988B043 /* ImageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D63DC5D930DA6754D9D5D752 /* ImageAttachment.swift */; };
 		F0C3071F65BAAF5167C4264D /* MarkdownStripperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */; };
@@ -90,6 +93,7 @@
 		2FF03FFD5411E5D6DACB174F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPasteTests.swift; sourceTree = "<group>"; };
 		36040F77A8954889FD17B3F7 /* AttachmentCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentCounter.swift; sourceTree = "<group>"; };
+		37D4BA4F3B83A4B6E3AF18AB /* ImageTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTransform.swift; sourceTree = "<group>"; };
 		38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteMachineTests.swift; sourceTree = "<group>"; };
 		3BBF5507E1D775853431DEE2 /* FerryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerryApp.swift; sourceTree = "<group>"; };
 		40003665F86DB88A08227A91 /* MarkdownSyntaxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownSyntaxTests.swift; sourceTree = "<group>"; };
@@ -105,6 +109,7 @@
 		67A2CAA5DADFF35F62C82100 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		6BB783964811F20202D9D007 /* ClipboardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRenderer.swift; sourceTree = "<group>"; };
 		6EF70CFFC458227B56D9A062 /* FerryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FerryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		701C5BEB4351AD022EE97697 /* ImageSizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSizeTests.swift; sourceTree = "<group>"; };
 		7151B13D09E90392EE76B847 /* MarkdownCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownCodec.swift; sourceTree = "<group>"; };
 		7440D480C3C34835CE121013 /* CopyMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyMode.swift; sourceTree = "<group>"; };
 		77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownStripperTests.swift; sourceTree = "<group>"; };
@@ -114,6 +119,7 @@
 		94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteEnvironment.swift; sourceTree = "<group>"; };
 		97715B750238D08351C1003E /* OnePastePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePastePayload.swift; sourceTree = "<group>"; };
 		9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRendererTests.swift; sourceTree = "<group>"; };
+		9E49027E105872FAD1425493 /* ImageTransformTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageTransformTests.swift; sourceTree = "<group>"; };
 		9EDF859FBBB0268A1BB4ED44 /* MarkdownStripper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownStripper.swift; sourceTree = "<group>"; };
 		A0CF786219E636A081CE0D55 /* RichClipboardReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichClipboardReader.swift; sourceTree = "<group>"; };
 		A668D7C79DE9C0563699820C /* FerryPasteboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerryPasteboard.swift; sourceTree = "<group>"; };
@@ -180,6 +186,8 @@
 				35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */,
 				8F2A1D922D2B34D27D85092F /* EditorEditingTests.swift */,
 				584CB586F92F8A01AAE467FE /* EditorSyncAndImageTests.swift */,
+				701C5BEB4351AD022EE97697 /* ImageSizeTests.swift */,
+				9E49027E105872FAD1425493 /* ImageTransformTests.swift */,
 				547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */,
 				77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */,
 				40003665F86DB88A08227A91 /* MarkdownSyntaxTests.swift */,
@@ -258,6 +266,7 @@
 				8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */,
 				A668D7C79DE9C0563699820C /* FerryPasteboard.swift */,
 				5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */,
+				37D4BA4F3B83A4B6E3AF18AB /* ImageTransform.swift */,
 				CCE06F83B3597EE88162E470 /* ListContinuation.swift */,
 				7151B13D09E90392EE76B847 /* MarkdownCodec.swift */,
 				EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */,
@@ -378,6 +387,7 @@
 				65C08B558331B328A4882ACD /* FerryPasteboard.swift in Sources */,
 				F7DF2FA635C480357497AF5A /* Fragment.swift in Sources */,
 				EC53CE93EC811FB21988B043 /* ImageAttachment.swift in Sources */,
+				1C198C4323170D1274957B65 /* ImageTransform.swift in Sources */,
 				4385878646297D63D36086F0 /* KeystrokePoster.swift in Sources */,
 				A27D65B9169C61BBEDDE3743 /* ListContinuation.swift in Sources */,
 				13AD54D375AD438FFA8EDB9B /* MarkdownCodec.swift in Sources */,
@@ -419,6 +429,8 @@
 				16932ED44CC744E4FC30EBF6 /* CopyPasteTests.swift in Sources */,
 				7D2CD535892FBADC5AECC526 /* EditorEditingTests.swift in Sources */,
 				C27F12FE86535909226C9A68 /* EditorSyncAndImageTests.swift in Sources */,
+				8CBB6B4BFE04781A54C191EF /* ImageSizeTests.swift in Sources */,
+				E6E0D55891AC2F7ABA510A1E /* ImageTransformTests.swift in Sources */,
 				53582951E663B5585EB51C85 /* MarkdownCodecTests.swift in Sources */,
 				F0C3071F65BAAF5167C4264D /* MarkdownStripperTests.swift in Sources */,
 				B039B085DAA1CBCF7E18F1C6 /* MarkdownSyntaxTests.swift in Sources */,
@@ -463,7 +475,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -471,7 +483,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;
@@ -483,7 +495,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -491,7 +503,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;

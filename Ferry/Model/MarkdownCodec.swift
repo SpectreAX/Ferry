@@ -6,20 +6,36 @@ enum MarkdownCodec {
     private static let imagePattern = try! NSRegularExpression(
         pattern: #"!\[([^\]\n]*)\]\((?:<([^<>\n]+)>|([^()\s<>]+))\)"#)
 
+    /// `<img src="…" alt="…" width="…">` on one line, as written for a resized image (and by other editors).
+    private static let imgTag = try! NSRegularExpression(pattern: #"<img\b[^>\n]*>"#, options: .caseInsensitive)
+
     // MARK: Load
 
     static func attributedString(from markdown: String, baseDirectory: URL?,
                                  attributes: [NSAttributedString.Key: Any] = EditorStyle.baseAttributes) -> NSAttributedString {
         let source = markdown as NSString
+        let all = NSRange(location: 0, length: source.length)
+        // Both forms, in document order; a match inside an earlier one is skipped.
+        let matches = (imagePattern.matches(in: markdown, range: all) + imgTag.matches(in: markdown, range: all))
+            .sorted { $0.range.location < $1.range.location }
         let result = NSMutableAttributedString()
         var cursor = 0
-        for match in imagePattern.matches(in: markdown, range: NSRange(location: 0, length: source.length)) {
-            let alt = source.substring(with: match.range(at: 1))
-            let pathRange = match.range(at: 2).location != NSNotFound ? match.range(at: 2) : match.range(at: 3)
+        for match in matches where match.range.location >= cursor {
             let raw = source.substring(with: match.range)
-            guard let url = resolve(source.substring(with: pathRange), baseDirectory: baseDirectory),
-                  let attachment = ImageAttachment(fileURL: url, alt: alt, markdownSource: raw)
-            else { continue } // missing or unreadable: keep the Markdown text untouched
+            let attachment: ImageAttachment?
+            if match.regularExpression === imgTag {
+                let tag = imgTagAttributes(raw)
+                attachment = tag.src.flatMap { resolve($0, baseDirectory: baseDirectory) }.flatMap {
+                    ImageAttachment(fileURL: $0, alt: tag.alt, markdownSource: raw, displayWidth: tag.width)
+                }
+            } else {
+                let alt = source.substring(with: match.range(at: 1))
+                let pathRange = match.range(at: 2).location != NSNotFound ? match.range(at: 2) : match.range(at: 3)
+                attachment = resolve(source.substring(with: pathRange), baseDirectory: baseDirectory).flatMap {
+                    ImageAttachment(fileURL: $0, alt: alt, markdownSource: raw)
+                }
+            }
+            guard let attachment else { continue } // missing, remote or unreadable: keep the text untouched
             let before = NSRange(location: cursor, length: match.range.location - cursor)
             result.append(NSAttributedString(string: source.substring(with: before), attributes: attributes))
             result.append(attachmentString(attachment, attributes: attributes))
@@ -27,6 +43,31 @@ enum MarkdownCodec {
         }
         result.append(NSAttributedString(string: source.substring(from: cursor), attributes: attributes))
         return result
+    }
+
+    /// `src`, `alt` and a numeric `width` (`360`, `"360"`, `"360px"`; a percentage or anything else is ignored).
+    static func imgTagAttributes(_ tag: String) -> (src: String?, alt: String, width: CGFloat?) {
+        func value(_ name: String) -> String? {
+            let pattern = "\\b\(name)\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s\"'>]+))"
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+                  let match = regex.firstMatch(in: tag, range: NSRange(location: 0, length: (tag as NSString).length)) else { return nil }
+            for group in 1...3 where match.range(at: group).location != NSNotFound {
+                return decodeEntities((tag as NSString).substring(with: match.range(at: group)))
+            }
+            return nil
+        }
+        let width = value("width").flatMap { raw -> CGFloat? in
+            let trimmed = raw.trimmingCharacters(in: .whitespaces).lowercased()
+            let number = trimmed.hasSuffix("px") ? String(trimmed.dropLast(2)) : trimmed
+            return Double(number).flatMap { $0 > 0 ? CGFloat($0) : nil }
+        }
+        return (value("src"), value("alt") ?? "", width)
+    }
+
+    private static func decodeEntities(_ text: String) -> String {
+        text.replacingOccurrences(of: "&quot;", with: "\"").replacingOccurrences(of: "&#39;", with: "'")
+            .replacingOccurrences(of: "&lt;", with: "<").replacingOccurrences(of: "&gt;", with: ">")
+            .replacingOccurrences(of: "&amp;", with: "&")
     }
 
     static func attachmentString(_ attachment: ImageAttachment,
@@ -71,10 +112,18 @@ enum MarkdownCodec {
             }
             guard let image = attachment as? ImageAttachment else { return } // foreign attachments are dropped
             for _ in 0..<range.length {
-                output += image.markdownSource ?? reference(for: image.fileURL, alt: image.alt, baseDirectory: baseDirectory)
+                output += image.markdownSource ?? reference(for: image, baseDirectory: baseDirectory)
             }
         }
         return output
+    }
+
+    /// `![alt](path)`, or `<img src="path" alt="…" width="…">` for an image given a width in Ferry.
+    static func reference(for image: ImageAttachment, baseDirectory: URL?) -> String {
+        guard let width = image.displayWidth else { return reference(for: image.fileURL, alt: image.alt, baseDirectory: baseDirectory) }
+        let path = relativePath(of: image.fileURL, to: baseDirectory) ?? image.fileURL.path
+        let alt = image.alt.isEmpty ? "" : #" alt="\#(ClipboardRenderer.escape(image.alt))""#
+        return #"<img src="\#(ClipboardRenderer.escape(path))"\#(alt) width="\#(Int(width.rounded()))">"#
     }
 
     static func reference(for fileURL: URL, alt: String, baseDirectory: URL?) -> String {

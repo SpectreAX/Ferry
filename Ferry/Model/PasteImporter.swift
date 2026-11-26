@@ -16,8 +16,8 @@ enum PasteImporter {
                                  attributes: [NSAttributedString.Key: Any] = EditorStyle.baseAttributes) -> NSAttributedString {
         let result = NSMutableAttributedString()
         func appendText(_ text: String) { result.append(NSAttributedString(string: text, attributes: attributes)) }
-        func appendImage(_ url: URL, alt: String) {
-            if let attachment = ImageAttachment(fileURL: url, alt: alt) {
+        func appendImage(_ url: URL, alt: String, displayWidth: CGFloat? = nil) {
+            if let attachment = ImageAttachment(fileURL: url, alt: alt, displayWidth: displayWidth) {
                 result.append(MarkdownCodec.attachmentString(attachment, attributes: attributes))
             } else {
                 appendText(MarkdownCodec.imageMarkdown(alt: alt, path: url.path, forceAngleBrackets: true))
@@ -42,7 +42,7 @@ enum PasteImporter {
                 guard let image = segment.image else { continue }
                 let source = URL(fileURLWithPath: image.path, isDirectory: false)
                 let url = documentURL.flatMap { try? AssetStore.adoptImage(source, documentURL: $0) } ?? source
-                appendImage(url, alt: image.alt)
+                appendImage(url, alt: image.alt, displayWidth: image.displayWidth)
             }
         case .mixed(let segments):
             for segment in segments {
