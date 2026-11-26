@@ -15,6 +15,8 @@ final class EditorTextView: NSTextView {
     var stripMarkdownOnCopy: () -> Bool = { Preferences.stripMarkdownOnCopy }
     var twoStepClipboard = TwoStepClipboard.shared
     var onePasteController: () -> OnePasteController = { OnePasteController.shared }
+    /// Where ⌘K looks for a URL to link to (tests use a private pasteboard).
+    var linkSourcePasteboard: NSPasteboard = .general
 
     private var ownedTextStorage: NSTextStorage?
     private var pendingAfterSave: ((URL) -> Void)?
@@ -86,6 +88,128 @@ final class EditorTextView: NSTextView {
         case nil:
             super.insertNewline(sender)
         }
+    }
+
+    // MARK: Focus
+
+    private var didRequestInitialFocus = false
+
+    /// A newly opened window starts with the cursor in the text, unless something else already has the keyboard.
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        guard let window, !didRequestInitialFocus else { return }
+        didRequestInitialFocus = true
+        DispatchQueue.main.async { [weak self, weak window] in
+            guard let self, let window, window.firstResponder == nil || window.firstResponder === window else { return }
+            window.makeFirstResponder(self)
+        }
+    }
+
+    // MARK: Tab and ⇧Tab
+
+    override func insertTab(_ sender: Any?) {
+        guard !hasMarkedText(), selectedRanges.count == 1, let storage = textStorage,
+              let edit = ListIndentation.indent(in: storage.string, selection: selectedRange()) else { return super.insertTab(sender) }
+        apply(edit, name: "Indent")
+    }
+
+    override func insertBacktab(_ sender: Any?) {
+        guard !hasMarkedText(), selectedRanges.count == 1, let storage = textStorage else { return super.insertBacktab(sender) }
+        guard let edit = ListIndentation.outdent(in: storage.string, selection: selectedRange()) else { return } // nothing to outdent
+        apply(edit, name: "Outdent")
+    }
+
+    /// Rebuilds the touched lines from the text storage, only adding or removing leading whitespace, so images
+    /// and anything else on the lines are kept as they are.
+    private func apply(_ edit: ListIndentation.Edit, name: String) {
+        guard let storage = textStorage else { return }
+        let rebuilt = NSMutableAttributedString()
+        var cursor = edit.range.location
+        for change in edit.changes {
+            rebuilt.append(storage.attributedSubstring(from: NSRange(location: cursor, length: change.line.location - cursor)))
+            rebuilt.append(NSAttributedString(string: String(repeating: " ", count: change.added), attributes: EditorStyle.baseAttributes))
+            rebuilt.append(storage.attributedSubstring(from: NSRange(location: change.line.location + change.removed,
+                                                                     length: change.line.length - change.removed)))
+            cursor = NSMaxRange(change.line)
+        }
+        replaceMarkdown(edit.range, with: rebuilt, select: edit.selection)
+        undoManager?.setActionName(name)
+    }
+
+    /// One undoable replacement with plain Markdown text, then a new selection.
+    private func replaceMarkdown(_ range: NSRange, with text: String, select selection: NSRange) {
+        replaceMarkdown(range, with: NSAttributedString(string: text, attributes: EditorStyle.baseAttributes), select: selection)
+    }
+
+    /// Its own undo step, never merged into the typing around it.
+    private func replaceMarkdown(_ range: NSRange, with text: NSAttributedString, select selection: NSRange) {
+        breakUndoCoalescing()
+        guard let storage = textStorage, shouldChangeText(in: range, replacementString: text.string) else { return }
+        storage.replaceCharacters(in: range, with: text)
+        didChangeText()
+        setSelectedRange(selection)
+        breakUndoCoalescing()
+    }
+
+    // MARK: ⌘B, ⌘I, ⌘K
+
+    @objc func toggleBoldMarkdown(_ sender: Any?) { toggleEmphasis("**", name: "Bold") }
+    @objc func toggleItalicMarkdown(_ sender: Any?) { toggleEmphasis("*", name: "Italic") }
+
+    /// Wraps the selection in `marker`, or unwraps it when it already is (markers just outside or just inside the
+    /// selection). Images in the selection are kept: the selection is never turned into plain text.
+    private func toggleEmphasis(_ marker: String, name: String) {
+        guard !hasMarkedText(), selectedRanges.count == 1, let storage = textStorage else { return }
+        let string = storage.string as NSString
+        let selection = selectedRange()
+        let m = marker.utf16.count
+        defer { undoManager?.setActionName(name) }
+        guard selection.length > 0 else {
+            return replaceMarkdown(selection, with: marker + marker, select: NSRange(location: selection.location + m, length: 0))
+        }
+        let outside = min(MarkdownFormatting.stars(in: string, from: selection.location, forward: false),
+                          MarkdownFormatting.stars(in: string, from: NSMaxRange(selection), forward: true))
+        if MarkdownFormatting.isWrapped(stars: outside, marker: marker) {
+            let range = NSRange(location: selection.location - m, length: selection.length + 2 * m)
+            return replaceMarkdown(range, with: storage.attributedSubstring(from: selection),
+                                   select: NSRange(location: range.location, length: selection.length))
+        }
+        let inside = min(MarkdownFormatting.stars(in: string, from: selection.location, forward: true),
+                         MarkdownFormatting.stars(in: string, from: NSMaxRange(selection), forward: false))
+        if selection.length > 2 * m, MarkdownFormatting.isWrapped(stars: inside, marker: marker) {
+            let inner = NSRange(location: selection.location + m, length: selection.length - 2 * m)
+            return replaceMarkdown(selection, with: storage.attributedSubstring(from: inner),
+                                   select: NSRange(location: selection.location, length: inner.length))
+        }
+        let wrapped = NSMutableAttributedString(string: marker, attributes: EditorStyle.baseAttributes)
+        wrapped.append(storage.attributedSubstring(from: selection))
+        wrapped.append(NSAttributedString(string: marker, attributes: EditorStyle.baseAttributes))
+        replaceMarkdown(selection, with: wrapped, select: NSRange(location: selection.location + m, length: selection.length))
+    }
+
+    /// `[text](url)` with a URL from the clipboard, or `[text]()` ready for one.
+    @objc func insertMarkdownLink(_ sender: Any?) {
+        guard !hasMarkedText(), selectedRanges.count == 1, let storage = textStorage else { return }
+        let selection = selectedRange()
+        let text = (storage.string as NSString).substring(with: selection)
+        let url = linkSourcePasteboard.string(forType: .string).flatMap(MarkdownFormatting.httpURL(from:))
+        let link = "[" + text + "](" + (url ?? "") + ")"
+        let start = selection.location
+        let caret: Int
+        switch (text.isEmpty, url) {
+        case (false, .some): caret = start + link.utf16.count                // after the link
+        case (false, nil): caret = start + text.utf16.count + 3             // inside ()
+        case (true, _): caret = start + 1                                    // inside []
+        }
+        if text.contains("\u{FFFC}") { // keep images: wrap the attributed selection
+            let wrapped = NSMutableAttributedString(string: "[", attributes: EditorStyle.baseAttributes)
+            wrapped.append(storage.attributedSubstring(from: selection))
+            wrapped.append(NSAttributedString(string: "](" + (url ?? "") + ")", attributes: EditorStyle.baseAttributes))
+            replaceMarkdown(selection, with: wrapped, select: NSRange(location: caret, length: 0))
+        } else {
+            replaceMarkdown(selection, with: link, select: NSRange(location: caret, length: 0))
+        }
+        undoManager?.setActionName("Insert Link")
     }
 
     // MARK: Copy
@@ -173,12 +297,24 @@ final class EditorTextView: NSTextView {
     // MARK: Paste
 
     override func paste(_ sender: Any?) { paste(from: .general) }
-    override func pasteAsPlainText(_ sender: Any?) { paste(from: .general) }
+    override func pasteAsPlainText(_ sender: Any?) { paste(from: .general, smartLink: false) }
     override func pasteAsRichText(_ sender: Any?) { paste(from: .general) }
 
-    func paste(from pasteboard: NSPasteboard) {
+    /// `smartLink`: pasting a URL over selected text makes `[text](url)` (Paste and Match Style pastes it as is).
+    func paste(from pasteboard: NSPasteboard, smartLink: Bool = true) {
         guard let content = FerryPasteboard.read(from: pasteboard) else { return }
+        if smartLink, case .text(let raw) = content, let url = MarkdownFormatting.httpURL(from: raw), linkOverSelection(url) { return }
         insert(content, replacing: rangeForUserTextChange)
+    }
+
+    /// Turns selected text (one line, no images, not itself a URL) into a link to `url`.
+    private func linkOverSelection(_ url: String) -> Bool {
+        let selection = selectedRange()
+        guard selection.length > 0, selectedRanges.count == 1, let storage = textStorage else { return false }
+        let text = (storage.string as NSString).substring(with: selection)
+        guard !text.contains("\n"), !text.contains("\u{FFFC}"), MarkdownFormatting.httpURL(from: text) == nil else { return false }
+        replaceMarkdown(selection, with: "[" + text + "](" + url + ")", select: NSRange(location: selection.location + text.utf16.count + url.utf16.count + 4, length: 0))
+        return true
     }
 
     private func insert(_ content: PastedContent, replacing range: NSRange) {
@@ -202,6 +338,8 @@ final class EditorTextView: NSTextView {
             var attributes = newValue
             attributes[.ferryPendingImage] = nil
             attributes[.ferryHideableMarker] = nil
+            attributes[.ferryLinkURL] = nil
+            attributes[.ferryTaskCheckbox] = nil
             super.typingAttributes = attributes
         }
     }
@@ -278,45 +416,147 @@ final class EditorTextView: NSTextView {
 
     // MARK: Images: Quick Look and context menu
 
-    /// The image under a point in view coordinates: on the picture itself, not beside it at the end of the line.
-    func imageAttachment(at point: NSPoint) -> (attachment: ImageAttachment, characterIndex: Int)? {
+    /// The character drawn under a point in view coordinates: on its glyph, not beside it past the line's end.
+    func characterIndex(at point: NSPoint) -> Int? {
         guard let layoutManager, let textContainer, let storage = textStorage, storage.length > 0 else { return nil }
         let inContainer = NSPoint(x: point.x - textContainerOrigin.x, y: point.y - textContainerOrigin.y)
         let glyph = layoutManager.glyphIndex(for: inContainer, in: textContainer)
         guard layoutManager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: textContainer).contains(inContainer)
         else { return nil }
         let index = layoutManager.characterIndexForGlyph(at: glyph)
-        guard index < storage.length, let image = storage.attribute(.attachment, at: index, effectiveRange: nil) as? ImageAttachment,
+        return index < storage.length ? index : nil
+    }
+
+    /// The image under a point: on the picture itself.
+    func imageAttachment(at point: NSPoint) -> (attachment: ImageAttachment, characterIndex: Int)? {
+        guard let index = characterIndex(at: point),
+              let image = textStorage?.attribute(.attachment, at: index, effectiveRange: nil) as? ImageAttachment,
               FileManager.default.fileExists(atPath: image.fileURL.path) else { return nil }
         return (image, index)
     }
 
-    /// Double-clicking an image opens it in Quick Look.
+    /// The link (http, https, mailto) under a point: its text, or its target while the syntax shows.
+    func linkURL(at point: NSPoint) -> URL? {
+        characterIndex(at: point).flatMap { textStorage?.attribute(.ferryLinkURL, at: $0, effectiveRange: nil) as? URL }
+    }
+
+    /// The three characters of the task box (`[ ]`, `[x]`) under a point.
+    func taskCheckboxRange(at point: NSPoint) -> NSRange? {
+        guard let index = characterIndex(at: point), let storage = textStorage else { return nil }
+        var box = NSRange()
+        guard storage.attribute(.ferryTaskCheckbox, at: index, longestEffectiveRange: &box,
+                                in: NSRange(location: 0, length: storage.length)) != nil, box.length == 3 else { return nil }
+        let text = (storage.string as NSString).substring(with: box)
+        return text.hasPrefix("[") && text.hasSuffix("]") ? box : nil
+    }
+
+    private static let clickModifiers: NSEvent.ModifierFlags = [.command, .option, .control, .shift]
+
+    /// Double-click an image: Quick Look. ⌘-click a link: open it. Click a task box: check or uncheck it.
     override func mouseDown(with event: NSEvent) {
-        if event.clickCount == 2, let hit = imageAttachment(at: convert(event.locationInWindow, from: nil)) {
+        let point = convert(event.locationInWindow, from: nil)
+        let modifiers = event.modifierFlags.intersection(Self.clickModifiers)
+        if event.clickCount == 2, let hit = imageAttachment(at: point) {
             setSelectedRange(NSRange(location: hit.characterIndex, length: 1))
             showQuickLook(hit.attachment.fileURL)
+            return
+        }
+        if event.clickCount == 1, modifiers == .command, let url = linkURL(at: point) {
+            NSWorkspace.shared.open(url)
+            return
+        }
+        if event.clickCount == 1, modifiers.isEmpty, !hasMarkedText(), let box = taskCheckboxRange(at: point) {
+            toggleTask(box)
             return
         }
         super.mouseDown(with: event)
     }
 
-    /// Right-clicking an image adds Quick Look, Reveal in Finder and Open Image above the usual items.
+    /// `[ ]` ↔ `[x]` (undoable).
+    func toggleTask(_ box: NSRange) {
+        guard let storage = textStorage else { return }
+        let mark = NSRange(location: box.location + 1, length: 1)
+        let next = (storage.string as NSString).substring(with: mark) == " " ? "x" : " "
+        breakUndoCoalescing()
+        guard shouldChangeText(in: mark, replacementString: next) else { return }
+        storage.replaceCharacters(in: mark, with: next)
+        didChangeText()
+        breakUndoCoalescing()
+        undoManager?.setActionName(next == "x" ? "Check Task" : "Uncheck Task")
+    }
+
+    // MARK: Pointer over links and task boxes
+
+    private var hoverTrackingArea: NSTrackingArea?
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let hoverTrackingArea { removeTrackingArea(hoverTrackingArea) }
+        let area = NSTrackingArea(rect: .zero, options: [.mouseMoved, .activeInKeyWindow, .inVisibleRect], owner: self)
+        addTrackingArea(area)
+        hoverTrackingArea = area
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        super.mouseMoved(with: event)
+        updateHoverCursor(event.modifierFlags)
+    }
+
+    override func flagsChanged(with event: NSEvent) {
+        super.flagsChanged(with: event)
+        updateHoverCursor(event.modifierFlags)
+    }
+
+    /// A pointing hand where a click does something: a link with ⌘ held, a task box with no modifier.
+    private func updateHoverCursor(_ flags: NSEvent.ModifierFlags) {
+        guard let window else { return }
+        let point = convert(window.mouseLocationOutsideOfEventStream, from: nil)
+        guard bounds.contains(point) else { return }
+        let modifiers = flags.intersection(Self.clickModifiers)
+        let clickable = modifiers == .command && linkURL(at: point) != nil || modifiers.isEmpty && taskCheckboxRange(at: point) != nil
+        (clickable ? NSCursor.pointingHand : NSCursor.iBeam).set()
+    }
+
+    /// Right-clicking an image adds Quick Look, Reveal in Finder and Open Image above the usual items; a link adds
+    /// Open Link and Copy Link.
     override func menu(for event: NSEvent) -> NSMenu? {
         let menu = super.menu(for: event) ?? NSMenu()
-        guard let hit = imageAttachment(at: convert(event.locationInWindow, from: nil)) else { return menu }
-        let items = [
-            NSMenuItem(title: "Quick Look", action: #selector(quickLookImage(_:)), keyEquivalent: ""),
-            NSMenuItem(title: "Reveal in Finder", action: #selector(revealImage(_:)), keyEquivalent: ""),
-            NSMenuItem(title: "Open Image", action: #selector(openImage(_:)), keyEquivalent: ""),
-            NSMenuItem.separator(),
-        ]
-        for (offset, item) in items.enumerated() {
+        let point = convert(event.locationInWindow, from: nil)
+        let items: [NSMenuItem]
+        let object: URL
+        if let hit = imageAttachment(at: point) {
+            object = hit.attachment.fileURL
+            items = [
+                NSMenuItem(title: "Quick Look", action: #selector(quickLookImage(_:)), keyEquivalent: ""),
+                NSMenuItem(title: "Reveal in Finder", action: #selector(revealImage(_:)), keyEquivalent: ""),
+                NSMenuItem(title: "Open Image", action: #selector(openImage(_:)), keyEquivalent: ""),
+            ]
+        } else if let url = linkURL(at: point) {
+            object = url
+            items = [
+                NSMenuItem(title: "Open Link", action: #selector(openLink(_:)), keyEquivalent: ""),
+                NSMenuItem(title: "Copy Link", action: #selector(copyLink(_:)), keyEquivalent: ""),
+            ]
+        } else {
+            return menu
+        }
+        for (offset, item) in (items + [.separator()]).enumerated() {
             item.target = self
-            item.representedObject = hit.attachment.fileURL
+            item.representedObject = object
             menu.insertItem(item, at: offset)
         }
         return menu
+    }
+
+    @objc private func openLink(_ sender: NSMenuItem) {
+        (sender.representedObject as? URL).map { NSWorkspace.shared.open($0) }
+    }
+
+    @objc private func copyLink(_ sender: NSMenuItem) {
+        guard let url = sender.representedObject as? URL else { return }
+        onePasteController().standDown()
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(url.absoluteString, forType: .string)
     }
 
     @objc private func quickLookImage(_ sender: NSMenuItem) {

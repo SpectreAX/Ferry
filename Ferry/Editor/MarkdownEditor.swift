@@ -6,6 +6,7 @@ struct MarkdownEditor: NSViewRepresentable {
     let document: MarkdownDocument
     let fileURL: URL?
     var hideMarkdownSyntax = false
+    var fontSize = Double(EditorStyle.defaultFontSize)
     let onCopyToast: (String) -> Void
     @Environment(\.undoManager) private var undoManager
 
@@ -42,6 +43,7 @@ struct MarkdownEditor: NSViewRepresentable {
         guard let textView = scrollView.documentView as? EditorTextView else { return }
         textView.onCopyToast = onCopyToast
         context.coordinator.syncFromDocument(textView, scrollView: scrollView)
+        context.coordinator.applyFontSize(fontSize, to: textView)
         context.coordinator.hider?.setEnabled(hideMarkdownSyntax)
     }
 
@@ -64,6 +66,18 @@ struct MarkdownEditor: NSViewRepresentable {
                          range editedRange: NSRange, changeInLength delta: Int) {
             guard editedMask.contains(.editedCharacters) else { return }
             pendingHighlight = pendingHighlight.map { NSUnionRange($0, editedRange) } ?? editedRange
+        }
+
+        private var appliedFontSize = EditorStyle.fontSize
+
+        /// View › Bigger / Smaller / Actual Size: restyles in place (the text, undo and saved state don't change).
+        func applyFontSize(_ size: Double, to textView: EditorTextView) {
+            let size = EditorStyle.clamped(CGFloat(size))
+            guard size != appliedFontSize, let storage = textView.textStorage else { return }
+            appliedFontSize = size
+            textView.typingAttributes = EditorStyle.baseAttributes
+            highlighter.highlightAll(storage)
+            hider?.refreshAll()
         }
 
         func didLoad(_ markdown: String, baseDirectory: URL?) {

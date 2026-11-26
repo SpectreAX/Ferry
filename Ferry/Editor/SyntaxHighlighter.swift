@@ -4,6 +4,11 @@ extension NSAttributedString.Key {
     /// Markup that "Hide Markdown Syntax" may hide: heading #s, emphasis and code delimiters, link brackets
     /// and targets, escapes. Structural markers (lists, quotes, fences, rules, tables) only get dimmed.
     static let ferryHideableMarker = NSAttributedString.Key("dev.spectreax.ferry.hideableMarker")
+    /// The `URL` a link or autolink opens (⌘-click, context menu). Deliberately not `.link`: AppKit would turn
+    /// every plain click into opening it and restyle the text.
+    static let ferryLinkURL = NSAttributedString.Key("dev.spectreax.ferry.linkURL")
+    /// The three characters of a task box, `[ ]` or `[x]`: a click toggles it.
+    static let ferryTaskCheckbox = NSAttributedString.Key("dev.spectreax.ferry.taskCheckbox")
 }
 
 /// Markdown styling (CommonMark + GFM) by font and color only: the text is never changed.
@@ -119,6 +124,8 @@ final class SyntaxHighlighter {
         storage.removeAttribute(.strikethroughStyle, range: range)
         storage.removeAttribute(.backgroundColor, range: range)
         storage.removeAttribute(.ferryHideableMarker, range: range)
+        storage.removeAttribute(.ferryLinkURL, range: range)
+        storage.removeAttribute(.ferryTaskCheckbox, range: range)
 
         var protected: [NSRange] = []
         for fence in fences where NSIntersectionRange(fence.range, range).length > 0 {
@@ -182,6 +189,9 @@ final class SyntaxHighlighter {
             if let match = listItem.firstMatch(in: text as String, range: local) {
                 dim(storage, shifted(match.range))
                 let task = match.range(at: 1)
+                if task.location != NSNotFound {
+                    storage.addAttribute(.ferryTaskCheckbox, value: true, range: shifted(NSRange(location: task.location, length: 3)))
+                }
                 if task.location != NSNotFound, text.substring(with: task).lowercased().contains("x") {
                     let done = NSRange(location: NSMaxRange(match.range), length: local.length - NSMaxRange(match.range))
                     storage.addAttribute(.foregroundColor, value: EditorStyle.quoteColor, range: shifted(done))
@@ -218,8 +228,16 @@ final class SyntaxHighlighter {
             mark(storage, match.range(at: 1))
             storage.addAttribute(.foregroundColor, value: EditorStyle.linkColor, range: match.range(at: 2))
             mark(storage, match.range(at: 3))
+            // `](target "title")`: the target is the first word inside the parentheses.
+            let target = string.substring(with: NSRange(location: match.range(at: 3).location + 2, length: match.range(at: 3).length - 3))
+            if match.range(at: 1).length == 1, let url = safeLinkURL(target.split(separator: " ").first.map(String.init) ?? "") {
+                storage.addAttribute(.ferryLinkURL, value: url, range: match.range)
+            }
         }
-        each(autolink) { storage.addAttribute(.foregroundColor, value: EditorStyle.linkColor, range: $0.range) }
+        each(autolink) { match in
+            storage.addAttribute(.foregroundColor, value: EditorStyle.linkColor, range: match.range)
+            if let url = safeLinkURL(string.substring(with: match.range)) { storage.addAttribute(.ferryLinkURL, value: url, range: match.range) }
+        }
         for bold in [boldStars, boldUnderscores] {
             each(bold) { match in
                 addTrait(.boldFontMask, storage, match.range)
@@ -245,6 +263,17 @@ final class SyntaxHighlighter {
     private static func dim(_ storage: NSTextStorage, _ range: NSRange) {
         guard range.length > 0, range.location != NSNotFound else { return }
         storage.addAttribute(.foregroundColor, value: EditorStyle.markerColor, range: range)
+    }
+
+    /// A link target Ferry may open: http, https or mailto only (never `javascript:`, `file:` or app schemes).
+    static func safeLinkURL(_ raw: String) -> URL? {
+        var text = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.hasPrefix("<"), text.hasSuffix(">") { text = String(text.dropFirst().dropLast()) }
+        guard let url = URL(string: text)
+            ?? text.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed).flatMap(URL.init(string:)),
+              let scheme = url.scheme?.lowercased(), ["http", "https", "mailto"].contains(scheme) else { return nil }
+        if scheme != "mailto", url.host?.isEmpty ?? true { return nil }
+        return url
     }
 
     /// Dimmed, and hidden when "Hide Markdown Syntax" is on.

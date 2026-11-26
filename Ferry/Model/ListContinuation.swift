@@ -47,3 +47,93 @@ enum ListContinuation {
         return nil
     }
 }
+
+/// Tab / ⇧Tab on lists and multi-line selections: two spaces per level.
+enum ListIndentation {
+    /// Per line: how many leading characters go, and how many spaces come in their place.
+    struct LineChange: Equatable {
+        let line: NSRange
+        let removed: Int
+        let added: Int
+    }
+
+    struct Edit: Equatable {
+        /// The whole lines touched, and their new text (plain; the editor rebuilds it from `changes` so images stay).
+        let range: NSRange
+        let replacement: String
+        let selection: NSRange
+        let changes: [LineChange]
+    }
+
+    private static let unit = "  "
+    private static let listItem = try! NSRegularExpression(pattern: #"^[ \t]*(?:[-*+]|\d{1,9}[.)])[ \t]+"#)
+
+    /// Tab: indents a list item at the cursor, or every non-empty line of a multi-line selection. nil leaves Tab to
+    /// the text view (a tab character).
+    static func indent(in text: String, selection: NSRange) -> Edit? {
+        let lines = lineRanges(in: text as NSString, covering: selection)
+        let ns = text as NSString
+        guard let first = lines.first else { return nil }
+        if lines.count == 1 {
+            let line = ns.substring(with: first)
+            guard listItem.firstMatch(in: line, range: NSRange(location: 0, length: (line as NSString).length)) != nil else { return nil }
+        }
+        let changes = lines.map { line -> LineChange in
+            let isBlank = ns.substring(with: line).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return LineChange(line: line, removed: 0, added: isBlank ? 0 : unit.utf16.count)
+        }
+        return edit(ns, changes, selection: selection)
+    }
+
+    /// ⇧Tab: removes one level (a tab, or up to two spaces) from each line the selection touches.
+    static func outdent(in text: String, selection: NSRange) -> Edit? {
+        let ns = text as NSString
+        let changes = lineRanges(in: ns, covering: selection).map { line -> LineChange in
+            let content = ns.substring(with: line)
+            if content.hasPrefix("\t") { return LineChange(line: line, removed: 1, added: 0) }
+            return LineChange(line: line, removed: content.prefix(2).prefix { $0 == " " }.count, added: 0)
+        }
+        guard changes.contains(where: { $0.removed > 0 }) else { return nil }
+        return edit(ns, changes, selection: selection)
+    }
+
+    /// The lines a selection touches; a selection ending at the very start of a line leaves that line out.
+    private static func lineRanges(in ns: NSString, covering selection: NSRange) -> [NSRange] {
+        guard selection.location <= ns.length else { return [] }
+        var end = NSMaxRange(selection)
+        if selection.length > 0, end > selection.location, ns.lineRange(for: NSRange(location: end, length: 0)).location == end { end -= 1 }
+        var lines: [NSRange] = []
+        var location = ns.lineRange(for: NSRange(location: selection.location, length: 0)).location
+        repeat {
+            var contentsEnd = 0, lineEnd = 0
+            ns.getLineStart(nil, end: &lineEnd, contentsEnd: &contentsEnd, for: NSRange(location: location, length: 0))
+            lines.append(NSRange(location: location, length: contentsEnd - location))
+            location = lineEnd
+        } while location <= end && location < ns.length
+        return lines
+    }
+
+    private static func edit(_ ns: NSString, _ changes: [LineChange], selection: NSRange) -> Edit {
+        let whole = NSRange(location: changes[0].line.location, length: NSMaxRange(changes[changes.count - 1].line) - changes[0].line.location)
+        var replacement = ""
+        var cursor = whole.location
+        for change in changes {
+            replacement += ns.substring(with: NSRange(location: cursor, length: change.line.location - cursor))
+            replacement += String(repeating: " ", count: change.added)
+            replacement += ns.substring(with: NSRange(location: change.line.location + change.removed, length: change.line.length - change.removed))
+            cursor = NSMaxRange(change.line)
+        }
+        // Where an old position lands: moved by what was added or removed before it. A cursor at a line's start
+        // moves with its text; a selection starting there grows to include the new indentation.
+        func map(_ position: Int, includingLineStart: Bool) -> Int {
+            var shift = 0
+            for change in changes where change.line.location < position || includingLineStart && change.line.location == position {
+                shift += change.added - min(change.removed, position - change.line.location)
+            }
+            return position + shift
+        }
+        let start = map(selection.location, includingLineStart: selection.length == 0)
+        let end = selection.length == 0 ? start : map(NSMaxRange(selection), includingLineStart: true)
+        return Edit(range: whole, replacement: replacement, selection: NSRange(location: start, length: max(0, end - start)), changes: changes)
+    }
+}

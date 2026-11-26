@@ -33,6 +33,7 @@
 		6CB3441F77483BC9B3DA751F /* OnePasteControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6762269D130401202863D122 /* OnePasteControllerTests.swift */; };
 		6FEF11D090F43505599C95BC /* EditorTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E2E149C77F6951668D3E13 /* EditorTextView.swift */; };
 		7AA9FA21E246B4F675951004 /* ClipboardRendererTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */; };
+		7D2CD535892FBADC5AECC526 /* EditorEditingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2A1D922D2B34D27D85092F /* EditorEditingTests.swift */; };
 		83AA3208EB83A273FE8D728D /* ClipboardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BB783964811F20202D9D007 /* ClipboardRenderer.swift */; };
 		843AFB8AC5474ECB0798E7BD /* OnePasteController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A821A8AAF317AD8A4FF5F0B9 /* OnePasteController.swift */; };
 		8948C297B1F9797D7E098DE3 /* PasteLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D4AF5D80BB35C542E626CE /* PasteLog.swift */; };
@@ -54,6 +55,7 @@
 		C5E64DF8FE991F46E89B3011 /* TargetProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = C400A98CC31B6662DE2EE6E0 /* TargetProfiles.swift */; };
 		CA67DC80E640BB699734E9E0 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24904631FDF8DDA05F751958 /* TestSupport.swift */; };
 		CEC8E310960B26438BE8A123 /* TerminalPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7C4A2FCA71D85BEA4BEE27 /* TerminalPath.swift */; };
+		CFC0D71D22C464E6F1B2E329 /* MarkdownFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */; };
 		E3810F28265F92ED41D30233 /* OnePasteMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */; };
 		E58562E83B1A1B1FA5F5E10B /* AppPasteRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */; };
 		EA0F1A8EE3BC076D28E439FC /* AppShortcutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF768B8A8E18FE50868D6724 /* AppShortcutTests.swift */; };
@@ -106,6 +108,7 @@
 		7151B13D09E90392EE76B847 /* MarkdownCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownCodec.swift; sourceTree = "<group>"; };
 		7440D480C3C34835CE121013 /* CopyMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyMode.swift; sourceTree = "<group>"; };
 		77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownStripperTests.swift; sourceTree = "<group>"; };
+		8F2A1D922D2B34D27D85092F /* EditorEditingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorEditingTests.swift; sourceTree = "<group>"; };
 		8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorStyle.swift; sourceTree = "<group>"; };
 		93E2E149C77F6951668D3E13 /* EditorTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTextView.swift; sourceTree = "<group>"; };
 		94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteEnvironment.swift; sourceTree = "<group>"; };
@@ -124,6 +127,7 @@
 		DF768B8A8E18FE50868D6724 /* AppShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcutTests.swift; sourceTree = "<group>"; };
 		DF7C4A2FCA71D85BEA4BEE27 /* TerminalPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPath.swift; sourceTree = "<group>"; };
 		E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepClipboard.swift; sourceTree = "<group>"; };
+		EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownFormatting.swift; sourceTree = "<group>"; };
 		EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteEventTap.swift; sourceTree = "<group>"; };
 		ECE6AA4F2200E5630398CF41 /* AppShortcut.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcut.swift; sourceTree = "<group>"; };
 		EE7E9BA5FD65B6134D3598E1 /* SyntaxHider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHider.swift; sourceTree = "<group>"; };
@@ -174,6 +178,7 @@
 				FB5014A3700D1E2765BCC48F /* AttachmentCounterTests.swift */,
 				9B52DAED093652B7F34FFAEB /* ClipboardRendererTests.swift */,
 				35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */,
+				8F2A1D922D2B34D27D85092F /* EditorEditingTests.swift */,
 				584CB586F92F8A01AAE467FE /* EditorSyncAndImageTests.swift */,
 				547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */,
 				77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */,
@@ -255,6 +260,7 @@
 				5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */,
 				CCE06F83B3597EE88162E470 /* ListContinuation.swift */,
 				7151B13D09E90392EE76B847 /* MarkdownCodec.swift */,
+				EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */,
 				9EDF859FBBB0268A1BB4ED44 /* MarkdownStripper.swift */,
 				EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */,
 				0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */,
@@ -377,6 +383,7 @@
 				13AD54D375AD438FFA8EDB9B /* MarkdownCodec.swift in Sources */,
 				04C94E69E16AF6B186A41A92 /* MarkdownDocument.swift in Sources */,
 				B4F11CAE2CE6978F6B01060D /* MarkdownEditor.swift in Sources */,
+				CFC0D71D22C464E6F1B2E329 /* MarkdownFormatting.swift in Sources */,
 				FDD908A1FFC70263EE17144C /* MarkdownStripper.swift in Sources */,
 				843AFB8AC5474ECB0798E7BD /* OnePasteController.swift in Sources */,
 				22C9E66EE187D7D7753A1BB5 /* OnePasteEnvironment.swift in Sources */,
@@ -410,6 +417,7 @@
 				AEDF7769FCA98B6D19DAD42F /* AttachmentCounterTests.swift in Sources */,
 				7AA9FA21E246B4F675951004 /* ClipboardRendererTests.swift in Sources */,
 				16932ED44CC744E4FC30EBF6 /* CopyPasteTests.swift in Sources */,
+				7D2CD535892FBADC5AECC526 /* EditorEditingTests.swift in Sources */,
 				C27F12FE86535909226C9A68 /* EditorSyncAndImageTests.swift in Sources */,
 				53582951E663B5585EB51C85 /* MarkdownCodecTests.swift in Sources */,
 				F0C3071F65BAAF5167C4264D /* MarkdownStripperTests.swift in Sources */,
@@ -455,7 +463,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -463,7 +471,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;
@@ -475,7 +483,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -483,7 +491,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;

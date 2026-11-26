@@ -4,6 +4,7 @@ import SwiftUI
 struct FerryApp: App {
     @AppStorage(SettingsKeys.hideMarkdownSyntax) private var hideMarkdownSyntax = false
     @AppStorage(SettingsKeys.stripMarkdownOnCopy) private var stripMarkdownOnCopy = false
+    @AppStorage(SettingsKeys.editorFontSize) private var fontSize = Double(EditorStyle.defaultFontSize)
     @AppStorage(SettingsKeys.hideMarkdownSyntaxShortcut) private var hideShortcutRaw = AppShortcut.defaultHideMarkdown.storageString
     @AppStorage(SettingsKeys.stripMarkdownOnCopyShortcut) private var stripShortcutRaw = AppShortcut.defaultStripMarkdownOnCopy.storageString
 
@@ -23,6 +24,24 @@ struct FerryApp: App {
             CommandGroup(after: .toolbar) {
                 Toggle("Hide Markdown Syntax", isOn: $hideMarkdownSyntax)
                     .keyboardShortcut(AppShortcut.decode(hideShortcutRaw, default: .defaultHideMarkdown)?.keyboardShortcut)
+                Divider()
+                Button("Bigger") { fontSize = Double(EditorStyle.clamped(CGFloat(fontSize) + 1)) }
+                    .keyboardShortcut("=", modifiers: .command)
+                    .disabled(CGFloat(fontSize) >= EditorStyle.maxFontSize)
+                Button("Smaller") { fontSize = Double(EditorStyle.clamped(CGFloat(fontSize) - 1)) }
+                    .keyboardShortcut("-", modifiers: .command)
+                    .disabled(CGFloat(fontSize) <= EditorStyle.minFontSize)
+                Button("Actual Size") { fontSize = Double(EditorStyle.defaultFontSize) }
+                    .keyboardShortcut("0", modifiers: .command)
+            }
+            // Markdown formatting instead of the rich-text Format menu (fonts, colors, rulers don't apply).
+            CommandGroup(replacing: .textFormatting) {
+                Button("Bold") { NSApp.sendAction(#selector(EditorTextView.toggleBoldMarkdown(_:)), to: nil, from: nil) }
+                    .keyboardShortcut("b", modifiers: .command)
+                Button("Italic") { NSApp.sendAction(#selector(EditorTextView.toggleItalicMarkdown(_:)), to: nil, from: nil) }
+                    .keyboardShortcut("i", modifiers: .command)
+                Button("Insert Link") { NSApp.sendAction(#selector(EditorTextView.insertMarkdownLink(_:)), to: nil, from: nil) }
+                    .keyboardShortcut("k", modifiers: .command)
             }
         }
 

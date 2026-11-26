@@ -87,6 +87,14 @@ struct AppShortcut: Equatable, Hashable {
         AppShortcut(key: "g", modifiers: .command),
         AppShortcut(key: "g", modifiers: [.command, .shift]),
         AppShortcut(key: "c", modifiers: [.command, .option]), // Copy as Plain Markdown
+        AppShortcut(key: "b", modifiers: .command), // Bold
+        AppShortcut(key: "i", modifiers: .command), // Italic
+        AppShortcut(key: "k", modifiers: .command), // Insert Link
+        AppShortcut(key: "=", modifiers: .command), // Bigger
+        AppShortcut(key: "+", modifiers: .command),
+        AppShortcut(key: "=", modifiers: [.command, .shift]),
+        AppShortcut(key: "-", modifiers: .command), // Smaller
+        AppShortcut(key: "0", modifiers: .command), // Actual Size
     ]
 
     // MARK: Serialization
