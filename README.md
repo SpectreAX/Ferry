@@ -1,6 +1,8 @@
-# Ferry
-
-A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextKit 1), designed for copying text and inline images cleanly into desktop AI apps (Claude, ChatGPT, Codex, Antigravity, etc.).
+<div align="center">
+  <img src="design/previews/ferry-icon-1024.png" alt="Ferry" width="120">
+  <h1>Ferry</h1>
+  <p>A lightweight, native macOS Markdown editor built with SwiftUI and AppKit (TextKit 1), designed for copying text and inline images cleanly into desktop AI apps (Claude, ChatGPT, Codex, Antigravity, etc.).</p>
+</div>
 
 ## Features
 
