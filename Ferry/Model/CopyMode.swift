@@ -4,6 +4,8 @@ enum SettingsKeys {
     static let copyMode = "copyMode"
     static let hideMarkdownSyntax = "hideMarkdownSyntax"
     static let stripMarkdownOnCopy = "stripMarkdownOnCopy"
+    static let hideMarkdownSyntaxShortcut = "hideMarkdownSyntaxShortcut"
+    static let stripMarkdownOnCopyShortcut = "stripMarkdownOnCopyShortcut"
 }
 
 /// Editor and copy preferences (both off by default).

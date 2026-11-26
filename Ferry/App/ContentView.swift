@@ -4,6 +4,7 @@ struct ContentView: View {
     @ObservedObject var document: MarkdownDocument
     let fileURL: URL?
     @AppStorage(SettingsKeys.hideMarkdownSyntax) private var hideMarkdownSyntax = false
+    @AppStorage(SettingsKeys.stripMarkdownOnCopy) private var stripMarkdownOnCopy = false
     @State private var toast: String?
     @State private var toastTask: Task<Void, Never>?
 
@@ -18,6 +19,9 @@ struct ContentView: View {
                 }
             }
             .animation(.easeOut(duration: 0.2), value: toast)
+            .onChange(of: stripMarkdownOnCopy) { _, enabled in
+                showCopyToast(enabled ? "Copy ignores Markdown syntax" : "Copy keeps Markdown syntax")
+            }
     }
 
     private func showCopyToast(_ message: String) {
