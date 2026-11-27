@@ -19,6 +19,8 @@
 			<array>
 				<string>net.daringfireball.markdown</string>
 			</array>
+			<key>NSDocumentClass</key>
+			<string>$(PRODUCT_MODULE_NAME).FerryDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

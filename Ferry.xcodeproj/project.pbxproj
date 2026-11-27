@@ -19,6 +19,8 @@
 		271150B0C0D73CD108575664 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A2CAA5DADFF35F62C82100 /* SettingsView.swift */; };
 		291CE7DA310C6EC30AC30DD8 /* PasteEventTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */; };
 		2981BA957C1F7AAA838222DF /* TwoStepClipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */; };
+		3026BE907902F274D81CB7D3 /* FerryDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00A38E926862FD398D2B384C /* FerryDocument.swift */; };
+		336612DC6492023CFFC00D99 /* SafariTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DB5F834FBB49DB0681D01F9 /* SafariTabBar.swift */; };
 		353089E9F47739BC1546AFC3 /* PasteHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04528C54F46589E464978633 /* PasteHUD.swift */; };
 		39545178FFEF3F1819BAE7F3 /* OnePastePayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97715B750238D08351C1003E /* OnePastePayload.swift */; };
 		4385878646297D63D36086F0 /* KeystrokePoster.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFBE52C5FB5D978135B00AFA /* KeystrokePoster.swift */; };
@@ -28,7 +30,9 @@
 		53582951E663B5585EB51C85 /* MarkdownCodecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 547E03CD34868858D4CD5DC1 /* MarkdownCodecTests.swift */; };
 		55F45010FDDC38B607D3277F /* AssetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEFC1EA43136A369B2376513 /* AssetStore.swift */; };
 		5B1F70ADF68572DF14A6A1AC /* PasteImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */; };
+		5D22532DF01E2610977627F3 /* TabWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E8CD9EC3F677891B83089C /* TabWindowController.swift */; };
 		63D23764D1188A56C025BC89 /* OnePasteMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */; };
+		64635726B545A506C923D68D /* TabStripModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93040D967FE9BAB44C770244 /* TabStripModel.swift */; };
 		65C08B558331B328A4882ACD /* FerryPasteboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A668D7C79DE9C0563699820C /* FerryPasteboard.swift */; };
 		68DE408DF9E2524ABE6A5AD9 /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFD7B542EFA4C45FB0F6FAD /* SyntaxHighlighter.swift */; };
 		6CB3441F77483BC9B3DA751F /* OnePasteControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6762269D130401202863D122 /* OnePasteControllerTests.swift */; };
@@ -58,6 +62,7 @@
 		CA67DC80E640BB699734E9E0 /* TestSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24904631FDF8DDA05F751958 /* TestSupport.swift */; };
 		CEC8E310960B26438BE8A123 /* TerminalPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF7C4A2FCA71D85BEA4BEE27 /* TerminalPath.swift */; };
 		CFC0D71D22C464E6F1B2E329 /* MarkdownFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */; };
+		D49ABB72D9A3D90E565327B4 /* TabStripModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFF27B1E01DC96EFB2FEC190 /* TabStripModelTests.swift */; };
 		E3810F28265F92ED41D30233 /* OnePasteMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */; };
 		E58562E83B1A1B1FA5F5E10B /* AppPasteRulesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC167E02DDC7B9CE9D8BA401 /* AppPasteRulesTests.swift */; };
 		E6E0D55891AC2F7ABA510A1E /* ImageTransformTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E49027E105872FAD1425493 /* ImageTransformTests.swift */; };
@@ -67,6 +72,7 @@
 		F421F53BB6549765953DCFFD /* RemoteImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */; };
 		F7DF2FA635C480357497AF5A /* Fragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6B6AE0E5F79A36AEAE3969 /* Fragment.swift */; };
 		FDD908A1FFC70263EE17144C /* MarkdownStripper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EDF859FBBB0268A1BB4ED44 /* MarkdownStripper.swift */; };
+		FFC55939532DC791F02DD129 /* TabWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DF9F407CB23DB033EA236E /* TabWindowTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +87,7 @@
 
 /* Begin PBXFileReference section */
 		0076E114A71EC6CEE2ABC8AE /* ShortcutRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRecorder.swift; sourceTree = "<group>"; };
+		00A38E926862FD398D2B384C /* FerryDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FerryDocument.swift; sourceTree = "<group>"; };
 		04528C54F46589E464978633 /* PasteHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteHUD.swift; sourceTree = "<group>"; };
 		05D58F16CA147D3BF6344AD5 /* OnePasteMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteMachine.swift; sourceTree = "<group>"; };
 		06069725BC2B5F43B304466F /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
@@ -89,6 +96,7 @@
 		21173FB22033ABD0D8F5E5BE /* AppPasteRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPasteRules.swift; sourceTree = "<group>"; };
 		246213B0C38BCE420A8D6698 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		24904631FDF8DDA05F751958 /* TestSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSupport.swift; sourceTree = "<group>"; };
+		27DF9F407CB23DB033EA236E /* TabWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabWindowTests.swift; sourceTree = "<group>"; };
 		2A8213EC6ABEF82B3D6949E3 /* MarkdownDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownDocument.swift; sourceTree = "<group>"; };
 		2FF03FFD5411E5D6DACB174F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		35B99286A82476FA9EF2D063 /* CopyPasteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyPasteTests.swift; sourceTree = "<group>"; };
@@ -108,6 +116,7 @@
 		6762269D130401202863D122 /* OnePasteControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteControllerTests.swift; sourceTree = "<group>"; };
 		67A2CAA5DADFF35F62C82100 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		6BB783964811F20202D9D007 /* ClipboardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardRenderer.swift; sourceTree = "<group>"; };
+		6DB5F834FBB49DB0681D01F9 /* SafariTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariTabBar.swift; sourceTree = "<group>"; };
 		6EF70CFFC458227B56D9A062 /* FerryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FerryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		701C5BEB4351AD022EE97697 /* ImageSizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSizeTests.swift; sourceTree = "<group>"; };
 		7151B13D09E90392EE76B847 /* MarkdownCodec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownCodec.swift; sourceTree = "<group>"; };
@@ -115,6 +124,7 @@
 		77218B91B7AD67E57C8C494E /* MarkdownStripperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownStripperTests.swift; sourceTree = "<group>"; };
 		8F2A1D922D2B34D27D85092F /* EditorEditingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorEditingTests.swift; sourceTree = "<group>"; };
 		8FEA68D93C43BAA0D707FFEA /* EditorStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorStyle.swift; sourceTree = "<group>"; };
+		93040D967FE9BAB44C770244 /* TabStripModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabStripModel.swift; sourceTree = "<group>"; };
 		93E2E149C77F6951668D3E13 /* EditorTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorTextView.swift; sourceTree = "<group>"; };
 		94BDAB9219C3182C734C0B84 /* OnePasteEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePasteEnvironment.swift; sourceTree = "<group>"; };
 		97715B750238D08351C1003E /* OnePastePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnePastePayload.swift; sourceTree = "<group>"; };
@@ -129,9 +139,11 @@
 		CCE06F83B3597EE88162E470 /* ListContinuation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListContinuation.swift; sourceTree = "<group>"; };
 		D454583DC98E240B2738FA9D /* TargetSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetSnapshot.swift; sourceTree = "<group>"; };
 		D63DC5D930DA6754D9D5D752 /* ImageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageAttachment.swift; sourceTree = "<group>"; };
+		D8E8CD9EC3F677891B83089C /* TabWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabWindowController.swift; sourceTree = "<group>"; };
 		DB55C01B85819F5B1E23ED0E /* Ferry.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ferry.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF768B8A8E18FE50868D6724 /* AppShortcutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppShortcutTests.swift; sourceTree = "<group>"; };
 		DF7C4A2FCA71D85BEA4BEE27 /* TerminalPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPath.swift; sourceTree = "<group>"; };
+		DFF27B1E01DC96EFB2FEC190 /* TabStripModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabStripModelTests.swift; sourceTree = "<group>"; };
 		E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwoStepClipboard.swift; sourceTree = "<group>"; };
 		EC02C019AB7339B76FC6571D /* MarkdownFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownFormatting.swift; sourceTree = "<group>"; };
 		EC71F8EFF29D627971DBD9D1 /* PasteEventTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteEventTap.swift; sourceTree = "<group>"; };
@@ -194,6 +206,8 @@
 				6762269D130401202863D122 /* OnePasteControllerTests.swift */,
 				38D27D9494778AE448CF1DEC /* OnePasteMachineTests.swift */,
 				FB10231BBD51BA413E851AFF /* RichPasteTests.swift */,
+				DFF27B1E01DC96EFB2FEC190 /* TabStripModelTests.swift */,
+				27DF9F407CB23DB033EA236E /* TabWindowTests.swift */,
 				24904631FDF8DDA05F751958 /* TestSupport.swift */,
 				54999AE6576EA8564DA68374 /* TwoStepClipboardTests.swift */,
 			);
@@ -247,9 +261,12 @@
 			children = (
 				246213B0C38BCE420A8D6698 /* ContentView.swift */,
 				3BBF5507E1D775853431DEE2 /* FerryApp.swift */,
+				00A38E926862FD398D2B384C /* FerryDocument.swift */,
 				2A8213EC6ABEF82B3D6949E3 /* MarkdownDocument.swift */,
+				6DB5F834FBB49DB0681D01F9 /* SafariTabBar.swift */,
 				67A2CAA5DADFF35F62C82100 /* SettingsView.swift */,
 				0076E114A71EC6CEE2ABC8AE /* ShortcutRecorder.swift */,
+				D8E8CD9EC3F677891B83089C /* TabWindowController.swift */,
 				06069725BC2B5F43B304466F /* ToastView.swift */,
 			);
 			path = App;
@@ -274,6 +291,7 @@
 				EFC8DA8C6F2674E8FC45C185 /* PasteImporter.swift */,
 				0C3258F2BA8F5E5F08AB338D /* RemoteImageLoader.swift */,
 				A0CF786219E636A081CE0D55 /* RichClipboardReader.swift */,
+				93040D967FE9BAB44C770244 /* TabStripModel.swift */,
 				E59CE5AD182C6CC1B963EB01 /* TwoStepClipboard.swift */,
 			);
 			path = Model;
@@ -384,6 +402,7 @@
 				A128646F22044AAE0FAA3286 /* EditorStyle.swift in Sources */,
 				6FEF11D090F43505599C95BC /* EditorTextView.swift in Sources */,
 				9F7B31B23286EDD5FC516C17 /* FerryApp.swift in Sources */,
+				3026BE907902F274D81CB7D3 /* FerryDocument.swift in Sources */,
 				65C08B558331B328A4882ACD /* FerryPasteboard.swift in Sources */,
 				F7DF2FA635C480357497AF5A /* Fragment.swift in Sources */,
 				EC53CE93EC811FB21988B043 /* ImageAttachment.swift in Sources */,
@@ -405,10 +424,13 @@
 				8948C297B1F9797D7E098DE3 /* PasteLog.swift in Sources */,
 				F421F53BB6549765953DCFFD /* RemoteImageLoader.swift in Sources */,
 				AEB72D1705957B5607A8FC55 /* RichClipboardReader.swift in Sources */,
+				336612DC6492023CFFC00D99 /* SafariTabBar.swift in Sources */,
 				271150B0C0D73CD108575664 /* SettingsView.swift in Sources */,
 				1069E91BF0F84A87CFDA533C /* ShortcutRecorder.swift in Sources */,
 				98E66BE071CEC53A0D105566 /* SyntaxHider.swift in Sources */,
 				68DE408DF9E2524ABE6A5AD9 /* SyntaxHighlighter.swift in Sources */,
+				64635726B545A506C923D68D /* TabStripModel.swift in Sources */,
+				5D22532DF01E2610977627F3 /* TabWindowController.swift in Sources */,
 				12359D16FAA481F37AEEF8C5 /* TargetObserver.swift in Sources */,
 				C5E64DF8FE991F46E89B3011 /* TargetProfiles.swift in Sources */,
 				49E6134BB92F3BFBF84AADAE /* TargetSnapshot.swift in Sources */,
@@ -437,6 +459,8 @@
 				6CB3441F77483BC9B3DA751F /* OnePasteControllerTests.swift in Sources */,
 				63D23764D1188A56C025BC89 /* OnePasteMachineTests.swift in Sources */,
 				09E70470BF3682838EF5944E /* RichPasteTests.swift in Sources */,
+				D49ABB72D9A3D90E565327B4 /* TabStripModelTests.swift in Sources */,
+				FFC55939532DC791F02DD129 /* TabWindowTests.swift in Sources */,
 				CA67DC80E640BB699734E9E0 /* TestSupport.swift in Sources */,
 				96AF6EF70DF240DAAE65A68C /* TwoStepClipboardTests.swift in Sources */,
 			);
@@ -475,7 +499,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -483,7 +507,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;
@@ -495,7 +519,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = NO;
 				INFOPLIST_FILE = Ferry/Info.plist;
@@ -503,7 +527,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.4.0;
+				MARKETING_VERSION = 1.5.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.spectreax.ferry;
 				PRODUCT_NAME = Ferry;
 				SDKROOT = macosx;

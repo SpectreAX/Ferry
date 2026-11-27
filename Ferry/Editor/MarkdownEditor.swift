@@ -5,6 +5,8 @@ import AppKit
 struct MarkdownEditor: NSViewRepresentable {
     let document: MarkdownDocument
     let fileURL: URL?
+    /// The native document (a tab): its undo manager and file location win over the environment's.
+    var owner: NSDocument? = nil
     var hideMarkdownSyntax = false
     var fontSize = Double(EditorStyle.defaultFontSize)
     let onCopyToast: (String) -> Void
@@ -15,6 +17,7 @@ struct MarkdownEditor: NSViewRepresentable {
     func makeNSView(context: Context) -> NSScrollView {
         let textView = EditorTextView.make()
         textView.delegate = context.coordinator
+        textView.owningDocument = owner
         textView.onCopyToast = onCopyToast
 
         if let storage = textView.textStorage {
@@ -60,7 +63,10 @@ struct MarkdownEditor: NSViewRepresentable {
         init(_ parent: MarkdownEditor) { self.parent = parent }
 
         /// Use the document's undo manager so text edits mark the document dirty.
-        func undoManager(for view: NSTextView) -> UndoManager? { parent.undoManager }
+        func undoManager(for view: NSTextView) -> UndoManager? { documentUndoManager }
+
+        /// Each tab's document keeps its own undo history, whichever tab is shown.
+        var documentUndoManager: UndoManager? { parent.owner?.undoManager ?? parent.undoManager }
 
         func textStorage(_ textStorage: NSTextStorage, didProcessEditing editedMask: NSTextStorageEditActions,
                          range editedRange: NSRange, changeInLength delta: Int) {
@@ -115,7 +121,7 @@ struct MarkdownEditor: NSViewRepresentable {
             scrollView.contentView.scroll(to: NSPoint(x: origin.x, y: min(origin.y, maxY)))
             scrollView.reflectScrolledClipView(scrollView.contentView)
             // Undo steps refer to the old text; replaying them on the new one would garble it.
-            parent.undoManager?.removeAllActions()
+            documentUndoManager?.removeAllActions()
             didLoad(markdown, baseDirectory: baseDirectory)
         }
 

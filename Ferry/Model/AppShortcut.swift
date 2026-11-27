@@ -95,6 +95,18 @@ struct AppShortcut: Equatable, Hashable {
         AppShortcut(key: "=", modifiers: [.command, .shift]),
         AppShortcut(key: "-", modifiers: .command), // Smaller
         AppShortcut(key: "0", modifiers: .command), // Actual Size
+        AppShortcut(key: "t", modifiers: .command), // New Tab
+        AppShortcut(key: "w", modifiers: [.command, .shift]), // Close Window
+        AppShortcut(key: "s", modifiers: [.command, .shift]), // Save As
+        AppShortcut(key: "[", modifiers: [.command, .shift]), // Show Previous Tab
+        AppShortcut(key: "]", modifiers: [.command, .shift]), // Show Next Tab
+        AppShortcut(key: "tab", modifiers: .control),
+        AppShortcut(key: "tab", modifiers: [.control, .shift]),
+        AppShortcut(key: "1", modifiers: .command), AppShortcut(key: "2", modifiers: .command),
+        AppShortcut(key: "3", modifiers: .command), AppShortcut(key: "4", modifiers: .command),
+        AppShortcut(key: "5", modifiers: .command), AppShortcut(key: "6", modifiers: .command),
+        AppShortcut(key: "7", modifiers: .command), AppShortcut(key: "8", modifiers: .command),
+        AppShortcut(key: "9", modifiers: .command),
     ]
 
     // MARK: Serialization

@@ -3,6 +3,8 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var document: MarkdownDocument
     let fileURL: URL?
+    /// The native document this editor belongs to: its undo history, file location and save panel.
+    var owner: NSDocument? = nil
     @AppStorage(SettingsKeys.hideMarkdownSyntax) private var hideMarkdownSyntax = false
     @AppStorage(SettingsKeys.editorFontSize) private var fontSize = Double(EditorStyle.defaultFontSize)
     @AppStorage(SettingsKeys.stripMarkdownOnCopy) private var stripMarkdownOnCopy = false
@@ -10,7 +12,7 @@ struct ContentView: View {
     @State private var toastTask: Task<Void, Never>?
 
     var body: some View {
-        MarkdownEditor(document: document, fileURL: fileURL, hideMarkdownSyntax: hideMarkdownSyntax, fontSize: fontSize, onCopyToast: showCopyToast)
+        MarkdownEditor(document: document, fileURL: fileURL, owner: owner, hideMarkdownSyntax: hideMarkdownSyntax, fontSize: fontSize, onCopyToast: showCopyToast)
             .frame(minWidth: 480, minHeight: 320)
             .overlay(alignment: .bottom) {
                 if let toast {

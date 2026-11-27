@@ -7,6 +7,8 @@ final class EditorTextView: NSTextView {
     var onCopyToast: ((String) -> Void)?
     /// Overrides the document location (tests). Defaults to the window's NSDocument file URL.
     var documentURLProvider: (() -> URL?)?
+    /// The document this editor belongs to (a tab). Several tabs share one window, so the window can't tell.
+    weak var owningDocument: NSDocument?
     /// Where "Copy for AI" writes the `.md` attachment (tests use a temporary folder).
     var clipboardAttachmentsDirectory = ClipboardAttachments.defaultDirectory
     /// The Settings choice for selections with images (tests set it directly).
@@ -58,6 +60,7 @@ final class EditorTextView: NSTextView {
 
     var documentURL: URL? {
         if let documentURLProvider { return documentURLProvider() }
+        if let owningDocument { return owningDocument.fileURL }
         guard let window else { return nil }
         return NSDocumentController.shared.document(for: window)?.fileURL ?? window.representedURL
     }
@@ -403,7 +406,7 @@ final class EditorTextView: NSTextView {
     // MARK: Save before importing images into an untitled document
 
     private func saveDocumentFirst(then action: @escaping (URL) -> Void) {
-        guard let window, let document = NSDocumentController.shared.document(for: window) else { return }
+        guard let document = owningDocument ?? window.flatMap({ NSDocumentController.shared.document(for: $0) }) else { return }
         pendingAfterSave = action
         document.save(withDelegate: self, didSave: #selector(document(_:didSave:contextInfo:)), contextInfo: nil)
     }

@@ -28,6 +28,7 @@ targets:
         CFBundleDocumentTypes:
           - CFBundleTypeName: Markdown Document
             CFBundleTypeRole: Editor
+            NSDocumentClass: $(PRODUCT_MODULE_NAME).FerryDocument
             LSHandlerRank: Alternate
             LSItemContentTypes: [net.daringfireball.markdown]
         UTImportedTypeDeclarations:
@@ -41,8 +42,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.spectreax.ferry
         PRODUCT_NAME: Ferry
-        MARKETING_VERSION: "1.4.0"
-        CURRENT_PROJECT_VERSION: "7"
+        MARKETING_VERSION: "1.5.0"
+        CURRENT_PROJECT_VERSION: "8"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ENABLE_APP_SANDBOX: NO
         ENABLE_HARDENED_RUNTIME: NO
